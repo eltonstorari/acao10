@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:backgroundTint="@color/white">
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/constraintLayout"
+    tools:context=".admin.ui.CadUsuario.CadUsuarioFragment"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent">
+
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout_Pesquisa"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <EditText
+            android:id="@+id/edit_CadUsu_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:enabled="false"
+            android:hint="ID" />
+
+        <Button
+            android:id="@+id/btn_CadUsu_Img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="0dp"
+            android:layout_weight="3"
+            android:background="@color/colorPrimaryDark"
+            android:text="Imagem" />
+    </LinearLayout>
+
+
+    <EditText
+        android:id="@+id/edit_CadUsu_nome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Insira o nome"
+        app:layout_constraintTop_toBottomOf="@id/linearLayout_Pesquisa"/>
+
+    <EditText
+        android:id="@+id/edit_CadUsu_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Digite o email"
+        app:layout_constraintTop_toBottomOf="@id/edit_CadUsu_nome" />
+
+    <EditText
+        android:id="@+id/edit_CadUsu_Senha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Digite a Senha"
+        app:layout_constraintTop_toBottomOf="@id/edit_CadUsu_email" />
+
+    <TextView
+        android:id="@+id/txt_CadUsu_SelecioneNivel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="0dp"
+        android:text="Selecione o nivel do usuario"
+        android:textSize="20dp"
+        app:layout_constraintTop_toBottomOf="@id/edit_CadUsu_Senha"
+        tools:ignore="MissingConstraints" />
+
+    <RadioGroup
+        android:id="@+id/group_CadUsu_Usuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/txt_CadUsu_SelecioneNivel">
+
+        <RadioButton
+            android:id="@+id/radio_CadUsu_Usuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
+            android:text="Usuário" />
+
+        <RadioButton
+            android:id="@+id/radio_CadUsu_Admin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingEnd="50dp"
+            android:text="Administrador" />
+    </RadioGroup>
+
+
+    <ImageView
+        android:id="@+id/img_CadUsu_Foto"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:src="@drawable/sem_foto"
+        app:layout_constraintTop_toBottomOf="@id/group_CadUsu_Usuario"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="30dp"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteY="359dp" />
+
+
+    <Button
+        android:id="@+id/btn_CadUsu_Cadastro"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/background"
+        android:enabled="true"
+        android:text="Cadastrar"
+        android:textColor="#ffffff"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/img_CadUsu_Foto"
+        tools:layout_editor_absoluteX="16dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

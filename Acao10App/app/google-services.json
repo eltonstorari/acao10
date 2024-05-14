@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "997414481872",
+    "project_id": "acao10app",
+    "storage_bucket": "acao10app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:997414481872:android:8e4bc7736074cc648c13d5",
+        "android_client_info": {
+          "package_name": "com.storaritech.acao10app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA3nlFNn2DUbKlLN0YNehdkHNEW_bU0L2c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
