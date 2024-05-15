@@ -2,10 +2,20 @@ package com.storaritech.acao10app.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Menu;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
@@ -20,15 +30,91 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.storaritech.acao10app.FormLogin;
 import com.storaritech.acao10app.R;
 import com.storaritech.acao10app.databinding.ActivityFormMenuAdminBinding;
+import com.storaritech.acao10app.entidades.MySingleton;
+import com.storaritech.acao10app.entidades.Usuario;
 import com.storaritech.acao10app.usuario.FormMenu_Usuario;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class FormMenu_Admin extends AppCompatActivity {
+public class FormMenu_Admin extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener {
+    ImageView img_PerfilNav;
+    TextView txt_IdNav , txt_NomeNav, txt_EmailNav;
+    RequestQueue request;
+    JsonObjectRequest jsonObjectReq;
+    StringRequest stringRequest;
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityFormMenuAdminBinding binding;
 
+
+    @Override
+    protected void onStart(){
+        super.onStart();
+        IniciarComponentes();
+
+        txt_IdNav.setText(FirebaseAuth.getInstance().getUid());
+        carregarWEBService();
+    }
+
+    private void carregarWEBService() {
+        String ip = getString(R.string.ip);
+        String url = ip + "/acao10/api/usuarios/consultarUrl.php?id=" + txt_IdNav.getText().toString();
+        url = url.replace(" ", "%20");
+
+
+        jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url,
+                null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+                Usuario tabUsuarios = new Usuario();
+
+                JSONArray json = response.optJSONArray("usuarios");
+                JSONObject jsonObject  = null;
+
+                try {
+                    assert json != null;
+                    jsonObject = json.getJSONObject(0);
+                    tabUsuarios.setNome(jsonObject.optString("nome"));
+                    tabUsuarios.setEmail(jsonObject.optString("email"));
+                    tabUsuarios.setSenha(jsonObject.optString("senha"));
+                    tabUsuarios.setNivel(jsonObject.optString("nivel"));
+                    tabUsuarios.setUrlImagem(jsonObject.optString("url_imagem"));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                txt_NomeNav.setText(tabUsuarios.getNome());
+                txt_EmailNav.setText(tabUsuarios.getEmail());
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getApplicationContext(), "Não foi possivel efetuar a consulta " + error.toString(), Toast.LENGTH_LONG).show();
+                Log.i("ERRO", error.toString());
+            }
+        });
+
+        //resquest.add(jsonObjectReq);
+        MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsonObjectReq);
+
+
+    }
+
+    private void IniciarComponentes(){
+
+        //Instanciando a tela de SideBar
+        NavigationView navigationView = binding.navViewAdmin;
+        View header = navigationView.getHeaderView(0);
+        img_PerfilNav = header.findViewById(R.id.img_Admin_PerfilNav);
+        txt_IdNav = header.findViewById(R.id.txt_Admin_IdNav);
+        txt_NomeNav = header.findViewById(R.id.txt_Admin_NomeNav);
+        txt_EmailNav = header.findViewById(R.id.txt_Admin_EmailNav);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,5 +177,15 @@ public class FormMenu_Admin extends AppCompatActivity {
 
 
         return false;
+    }
+
+    @Override
+    public void onErrorResponse(VolleyError volleyError) {
+
+    }
+
+    @Override
+    public void onResponse(JSONObject jsonObject) {
+
     }
 }

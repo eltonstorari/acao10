@@ -43,12 +43,9 @@ public class FormCadastro extends AppCompatActivity implements Response.Listener
     private EditText edit_nome, edit_email, edit_senha;
     private Button bt_cadastrar;
     private String usuarioID;
-    ProgressDialog progresso;
-
-    RelativeLayout layoutRegistrar;
     RequestQueue request;
     JsonObjectRequest jsonObjectReq;
-    StringRequest stringRequest;
+
 
 
     @Override

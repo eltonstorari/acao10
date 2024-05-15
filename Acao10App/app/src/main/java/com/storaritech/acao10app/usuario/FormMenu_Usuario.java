@@ -37,7 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FormMenu_Usuario extends AppCompatActivity {
+public class FormMenu_Usuario extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener {
 
     ImageView img_PerfilNav;
     TextView txt_IdNav , txt_NomeNav, txt_EmailNav;
@@ -170,11 +170,11 @@ public class FormMenu_Usuario extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
         MenuItem item = menu.findItem(R.id.action_settings_usuario);
-
-
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(@androidx.annotation.NonNull MenuItem item) {
+
+                //Deslogado
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(FormMenu_Usuario.this, FormLogin.class);
                 startActivity(intent);
@@ -189,8 +189,13 @@ public class FormMenu_Usuario extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onErrorResponse(VolleyError volleyError) {
 
+    }
 
+    @Override
+    public void onResponse(JSONObject jsonObject) {
 
-
+    }
 }
