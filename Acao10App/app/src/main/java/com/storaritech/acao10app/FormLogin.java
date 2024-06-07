@@ -211,7 +211,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
 
     private void carregarWEBService(String UserId) {
         String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/usuarios/consultarUrl.php?id=" + UserId;
+        String url = ip + "/acao10/api/login/consultarUrl.php?id=" + UserId;
         url = url.replace(" ", "%20");
 
 
@@ -229,7 +229,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
                     tabUsuarios.setEmail(jsonObject.optString("email"));
                     tabUsuarios.setSenha(jsonObject.optString("senha"));
                     tabUsuarios.setNivel(jsonObject.optString("nivel"));
-                    tabUsuarios.setUrlImagem(jsonObject.optString("url_imagem"));
+                    tabUsuarios.setUrl_imagem(jsonObject.optString("url_imagem"));
                 }catch (JSONException e){
                     e.printStackTrace();
                 }

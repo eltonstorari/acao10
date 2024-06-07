@@ -61,7 +61,7 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
 
     private void carregarWEBService() {
         String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/usuarios/consultarUrl.php?id=" + txt_IdNav.getText().toString();
+        String url = ip + "/acao10/api/login/consultarUrl.php?id=" + txt_IdNav.getText().toString();
         url = url.replace(" ", "%20");
 
 
@@ -82,7 +82,7 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
                     tabUsuarios.setEmail(jsonObject.optString("email"));
                     tabUsuarios.setSenha(jsonObject.optString("senha"));
                     tabUsuarios.setNivel(jsonObject.optString("nivel"));
-                    tabUsuarios.setUrlImagem(jsonObject.optString("url_imagem"));
+                    tabUsuarios.setUrl_imagem(jsonObject.optString("url_imagem"));
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
@@ -123,14 +123,14 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
         setContentView(binding.getRoot());
 
         setSupportActionBar(binding.appBarFormMenuAdmin.toolbar);
-        binding.appBarFormMenuAdmin.fab.setOnClickListener(new View.OnClickListener() {
+        /**binding.appBarFormMenuAdmin.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .setAnchorView(R.id.fab).show();
             }
-        });
+        });**/
         DrawerLayout drawer = binding.drawerLayoutAdmin;
         NavigationView navigationView = binding.navViewAdmin;
         // Passing each menu ID as a set of Ids because each

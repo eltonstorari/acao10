@@ -19,7 +19,7 @@ import io.grpc.Context;
 
 public class Usuario {
 
-    String id, nome, email, senha, nivel, urlImagem;
+    String id, nome, email, senha, nivel, url_imagem;
 
     public String getId() {
         return id;
@@ -27,6 +27,14 @@ public class Usuario {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUrl_imagem() {
+        return url_imagem;
+    }
+
+    public void setUrl_imagem(String url_imagem) {
+        this.url_imagem = url_imagem;
     }
 
     public String getNome() {
@@ -61,13 +69,7 @@ public class Usuario {
         this.nivel = nivel;
     }
 
-    public String getUrlImagem() {
-        return urlImagem;
-    }
 
-    public void setUrlImagem(String urlImagem) {
-        this.urlImagem = urlImagem;
-    }
 
 
 

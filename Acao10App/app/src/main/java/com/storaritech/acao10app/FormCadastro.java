@@ -155,7 +155,7 @@ public class FormCadastro extends AppCompatActivity implements Response.Listener
         String senha = edit_senha.getText().toString();
         //carregarWebService
         String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/usuarios/registro.php?id="+usuarioID+"&nome="+nome+"&email="+email+"&senha="+senha+"&nivel=usuario&url_imagem=imagem";
+        String url = ip + "/acao10/api/login/registro.php?id="+usuarioID+"&nome="+nome+"&email="+email+"&senha="+senha+"&nivel=usuario&url_imagem=imagem";
         url = url.replace(" ", "%20");
 
         //edit_nome.setText(url);
