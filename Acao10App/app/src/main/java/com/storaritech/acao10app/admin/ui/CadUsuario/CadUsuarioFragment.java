@@ -35,6 +35,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -90,9 +91,10 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
     EditText editId, editNome, editEmail, editSenha;
     RadioGroup radioGroupNivel;
     ImageView imgFoto;
-    FloatingActionButton btnCadastrar;
+    FloatingActionButton btnCadastrar, btnEditar, btnRemover;
     StringRequest stringRequest;
     Bitmap bitmap;
+    private String usuarioID;
 
 
 
@@ -119,16 +121,64 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         radioGroupNivel = vista.findViewById(R.id.group_CadUsu_Usuario);
         imgFoto = vista.findViewById(R.id.img_CadUsu_Foto);
         btnCadastrar = vista.findViewById(R.id.btn_CadUsu_Cadastro);
+        btnEditar = vista.findViewById(R.id.btn_CadUsu_Editar);
+        btnRemover = vista.findViewById(R.id.btn_CadUsu_Deletar);
+
+
 
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //carregarWEBServiceConsultaUsuario();
+
+                //Esconde Teclado
+                //InputMethodManager imm = (InputMethodManager) getSystemService(FormMenu_Admin.INPUT_METHOD_SERVICE);
+                //if(imm.isActive())
+                   // imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+
+                String nome = editNome.getText().toString();
+                String email = editEmail.getText().toString();
+                String senha = editSenha.getText().toString();
+
+                if(nome.isEmpty() || email.isEmpty() || senha.isEmpty()){
+                    Snackbar snackbar = Snackbar.make(v, "Preencha todos os campos", Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
+                }else{
+
+                    CadastrarUsuario(v);
+                }
+            }
+        });
+
+        btnRemover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String id = editId.getText().toString();
+
+                if(id.isEmpty()){
+                    Snackbar snackbar = Snackbar.make(v, "Selecione primeiramente o usuário!", Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
+                }else{
+
+
+                    carregarWEBServiceRemover(id);
+
+
+                }
+
             }
         });
 
         return vista;
     }
+
+
+
+
 
     private void carregarWEBServiceListaUsuarios() {
         String ip = getString(R.string.ip);
@@ -140,7 +190,113 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
     }
 
 
+    private void CadastrarUsuario(View v){
+        String nome = editNome.getText().toString();
+        String email = editEmail.getText().toString();
+        String senha = editSenha.getText().toString();
 
+        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+
+                    SalvarDadosUsuario();
+
+
+                    //Snackbar snackbar = Snackbar.make(v, "Cadastro realizado com sucesso!!!", Snackbar.LENGTH_LONG);
+                    //snackbar.setBackgroundTint(Color.WHITE);
+                    //snackbar.setTextColor(Color.BLACK);
+                    //snackbar.show();
+
+                }else{
+                    String erro;
+                    try{
+                        throw task.getException();
+
+
+                    }catch(FirebaseAuthWeakPasswordException e) {
+                        erro = "Digite uma senha com no minimo 6 caracteres";
+                    }catch (FirebaseAuthUserCollisionException e) {
+                        erro = "Está conta já existe!";
+                    }catch (FirebaseAuthInvalidCredentialsException e){
+                        erro = "Email inválido";
+                    }catch (Exception e){
+                        erro = "Erro ao cadastrar usuário";
+                    }
+
+                    Snackbar snackbar = Snackbar.make(v, erro, Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
+
+                }
+            }
+        });
+
+    }
+
+    private void SalvarDadosUsuario() {
+        usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String nome = editNome.getText().toString();
+        String email = editEmail.getText().toString();
+        String senha = editSenha.getText().toString();
+
+        int selectedId = radioGroupNivel.getCheckedRadioButtonId();
+        RadioButton radioButton = radioGroupNivel.findViewById(selectedId);
+        String nivel =  radioButton.getText().toString().toLowerCase();
+
+        if (nivel.equals("usuário")){
+            nivel = "usuario";
+        }
+        else if(nivel.equals("administrador")){
+                nivel = "admin";
+            }
+
+
+        //carregarWebService
+        String ip = getString(R.string.ip);
+        String url = ip + "/acao10/api/login/registro.php?id="+usuarioID+"&nome="+nome+"&email="+email+"&senha="+senha+"&nivel="+nivel+"&url_imagem=imagens/sem_foto.jpg";
+        url = url.replace(" ", "%20");
+
+        //edit_nome.setText(url);
+
+        jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                editId.setText("");
+                editNome.setText("");
+                editEmail.setText("");
+                editSenha.setText("");
+                imgFoto.setImageResource(R.drawable.sem_foto);
+                carregarWEBServiceListaUsuarios();
+                Toast.makeText(getContext(), "Cadastro realizado com sucesso!!!", Toast.LENGTH_LONG).show();
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Não foi possivel efetuar a consulta " + error.toString(), Toast.LENGTH_LONG).show();
+                Log.i("ERRO", error.toString());
+
+
+                FirebaseUser usuarioAtual = FirebaseAuth.getInstance().getCurrentUser();
+                usuarioAtual.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getContext(), "Foi deletado no firebase", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+
+            }
+        });
+
+        //resquest.add(jsonObjectReq);
+        MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectReq);
+
+
+    }
 
     private void carregarWEBServiceConsultaUsuario(String IdClick) {
 
@@ -151,6 +307,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
 
         jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
             @Override
             public void onResponse(JSONObject response) {
 
@@ -279,13 +436,79 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         }
     }
 
+
+
+
     @Override
-    public void onitemClick(String idPosition) {
-
-        carregarWEBServiceConsultaUsuario(idPosition);
-        //Toast.makeText(getContext(),"" + idPosition,Toast.LENGTH_LONG).show();
-
-
+    public void onitemClick(String IdPosition) {
+        carregarWEBServiceConsultaUsuario(IdPosition);
 
     }
+
+    @Override
+    public void onClick(String CRUD, String id) {
+        if (CRUD == "editar"){
+            // Acao de editar cadastro
+        }else
+        if (CRUD == "remover"){
+            // Acao de remover cadastro
+
+        }
+
+
+        Toast.makeText(getContext(), CRUD, Toast.LENGTH_LONG).show();
+
+    }
+
+    private void carregarWEBServiceRemover(String id) {
+        String ip = getString(R.string.ip);
+        String url = ip + "/acao10/api/usuarios/remover.php?id=" + id;
+
+        stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+                if (response.trim().equalsIgnoreCase("removido")) {
+                    editId.setText("");
+                    editNome.setText("");
+                    editEmail.setText("");
+                    editSenha.setText("");
+                    imgFoto.setImageResource(R.drawable.sem_foto);
+                    carregarWEBServiceListaUsuarios();
+                    Toast.makeText(getContext(), "Excluído com sucesso", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (response.trim().equalsIgnoreCase("naoExiste")) {
+                        Toast.makeText(getContext(), "Usuário não Encontrado ->  " + response, Toast.LENGTH_SHORT).show();
+                        Log.i("RESPOSTA: ", "" + response);
+
+                    }else{
+
+                        Toast.makeText(getContext(), "Erro na Deleção ->  " + response, Toast.LENGTH_SHORT).show();
+                        Log.i("RESPOSTA: ", "" + response);
+
+                    }
+                }
+
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Erro ao Excluir", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+        //Toast.makeText(getContext(), "Deletada com sucesso!", Toast.LENGTH_SHORT).show();
+
+
+        //resquest.add(stringRequest);
+        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+
+    }
+
+
+
 }
