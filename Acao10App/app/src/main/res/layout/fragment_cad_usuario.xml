@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_margin="4dp"
-    android:backgroundTint="@color/white"
-    android:orientation="vertical"
-    tools:context=".admin.ui.CadUsuario.CadUsuarioFragment">
+    android:layout_width="match_parent"
+    android:backgroundTint="@color/white">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        tools:context=".admin.ui.CadUsuario.CadUsuarioFragment"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent">
+
 
 
     <LinearLayout
@@ -128,7 +131,6 @@
         android:layout_gravity="center"
         android:layout_marginTop="20dp"
         android:text="Lista de Usuários"
-
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -146,47 +148,63 @@
         app:layout_constraintTop_toBottomOf="@id/txt_TituloListaUsuario" />
 
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/idRecyclerUsuarios"
+
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_CadUsu_Cadastro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="@id/txt_TituloListaUsuario"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/baseline_send_24" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_CadUsu_Editar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/colorPrimary"
+            app:layout_constraintEnd_toStartOf="@+id/btn_CadUsu_Cadastro"
+            app:layout_constraintTop_toTopOf="@+id/btn_CadUsu_Cadastro"
+            app:srcCompat="@drawable/baseline_edit_square_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_CadUsu_Deletar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/red"
+            app:layout_constraintEnd_toStartOf="@+id/btn_CadUsu_Editar"
+            app:layout_constraintTop_toTopOf="@+id/btn_CadUsu_Editar"
+            app:srcCompat="@drawable/baseline_delete_forever_24" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txt_TituloListaUsuario"></androidx.recyclerview.widget.RecyclerView>
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/txt_TituloListaUsuario"
+        tools:ignore="MissingConstraints">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_CadUsu_Cadastro"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/baseline_send_24" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/idRecyclerUsuarios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
 
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_CadUsu_Editar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|end"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="@color/colorPrimary"
-        app:layout_constraintEnd_toStartOf="@+id/btn_CadUsu_Cadastro"
-        app:layout_constraintTop_toTopOf="@+id/btn_CadUsu_Cadastro"
-        app:srcCompat="@drawable/baseline_edit_square_24" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_CadUsu_Deletar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|end"
-        android:layout_marginEnd="20dp"
-        android:backgroundTint="@color/red"
-        app:layout_constraintEnd_toStartOf="@+id/btn_CadUsu_Editar"
-        app:layout_constraintTop_toTopOf="@+id/btn_CadUsu_Editar"
-        app:srcCompat="@drawable/baseline_delete_forever_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+</androidx.core.widget.NestedScrollView>

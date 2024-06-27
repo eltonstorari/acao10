@@ -89,7 +89,8 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
 
     EditText editId, editNome, editEmail, editSenha;
-    RadioGroup radioGroupNivel;
+    RadioGroup GroupNivel;
+    RadioButton radioUsuario, radioAdmin;
     ImageView imgFoto;
     FloatingActionButton btnCadastrar, btnEditar, btnRemover;
     StringRequest stringRequest;
@@ -118,11 +119,15 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         editNome = vista.findViewById(R.id.edit_CadUsu_nome);
         editEmail = vista.findViewById(R.id.edit_CadUsu_email);
         editSenha = vista.findViewById(R.id.edit_CadUsu_Senha);
-        radioGroupNivel = vista.findViewById(R.id.group_CadUsu_Usuario);
+        GroupNivel = vista.findViewById(R.id.group_CadUsu_Usuario);
         imgFoto = vista.findViewById(R.id.img_CadUsu_Foto);
         btnCadastrar = vista.findViewById(R.id.btn_CadUsu_Cadastro);
         btnEditar = vista.findViewById(R.id.btn_CadUsu_Editar);
         btnRemover = vista.findViewById(R.id.btn_CadUsu_Deletar);
+        radioUsuario = vista.findViewById(R.id.radio_CadUsu_Usuario);
+        radioAdmin = vista.findViewById(R.id.radio_CadUsu_Admin);
+
+
 
 
 
@@ -173,12 +178,105 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
             }
         });
 
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String id = editId.getText().toString();
+
+                if(id.isEmpty()){
+                    Snackbar snackbar = Snackbar.make(v, "Selecione primeiramente o usuário!", Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
+                }else{
+
+
+                    carregarWEBServiceAtualizar();
+
+
+                }
+
+            }
+        });
+
         return vista;
     }
 
 
 
+    private void carregarWEBServiceAtualizar() {
+                String ip = getString(R.string.ip);
+        String url = ip + "/acao10/api/usuarios/update.php?";
 
+        stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+
+                if (response.trim().equalsIgnoreCase("registra")) {
+
+                    Toast.makeText(getContext(), "Atualizando com sucesso!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Registro não Atualizado", Toast.LENGTH_SHORT).show();
+                    Log.i("RESPOSTA: ", "" + response);
+                }
+
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Erro ao Atualizar", Toast.LENGTH_SHORT).show();
+
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                String id = editId.getText().toString();
+                String nome = editNome.getText().toString() + " ";
+                String email = editEmail.getText().toString();
+                String senha = editSenha.getText().toString();
+                String nivel = "usuario";
+                String imagem = "";
+                //String imagem = converterImgString(bitmap);
+                //String url = "imagens/" + campoCodigo.getText().toString() + ".jpg;"
+
+
+                Map<String, String> parametros = new HashMap<>();
+                parametros.put("id", id);
+                parametros.put("nome", nome);
+                parametros.put("email", email);
+                parametros.put("senha", senha);
+                parametros.put("nivel", "usuario");
+                parametros.put("imagem", imagem);
+
+
+                //parametros.put("url", url);
+
+
+                return parametros;
+            }
+
+        };
+
+        //resquest.add(stringRequest);
+        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+    }
+
+
+
+    private String converterImgString(Bitmap bitmap) {
+
+        ByteArrayOutputStream array=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,array);
+        byte[] imagemByte=array.toByteArray();
+        String imagemString= android.util.Base64.encodeToString(imagemByte, android.util.Base64.DEFAULT);
+
+        return imagemString;
+    }
 
     private void carregarWEBServiceListaUsuarios() {
         String ip = getString(R.string.ip);
@@ -241,8 +339,8 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         String email = editEmail.getText().toString();
         String senha = editSenha.getText().toString();
 
-        int selectedId = radioGroupNivel.getCheckedRadioButtonId();
-        RadioButton radioButton = radioGroupNivel.findViewById(selectedId);
+        int selectedId = GroupNivel.getCheckedRadioButtonId();
+        RadioButton radioButton = GroupNivel.findViewById(selectedId);
         String nivel =  radioButton.getText().toString().toLowerCase();
 
         if (nivel.equals("usuário")){
@@ -333,6 +431,13 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 editNome.setText(tabUsuario.getNome());
                 editEmail.setText(tabUsuario.getEmail());
                 editSenha.setText(tabUsuario.getSenha());
+
+                if (tabUsuario.getNivel().equals("usuario")){
+                    radioUsuario.setChecked(true);
+                } else if (tabUsuario.getNivel().equals("admin")){
+                    radioAdmin.setChecked(true);
+                }
+
 
                 /**
                  *  RadioGroup aqui!!!!

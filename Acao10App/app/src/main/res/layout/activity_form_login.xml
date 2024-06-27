@@ -126,7 +126,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="UsuarioId"
-        android:visibility="visible"
+        android:visibility="invisible"
         tools:ignore="MissingConstraints"/>
 
     <ProgressBar
@@ -223,7 +223,6 @@
 
 
         />
-
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
