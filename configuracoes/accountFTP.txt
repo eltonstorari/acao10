@@ -1,0 +1,4 @@
+Nome de usuário do FTP: main@acao10.org
+Servidor FTP: ftp.acao10.org
+FTP & porta FTPS explícita:  21
+Senha: Su***P****mador***12
