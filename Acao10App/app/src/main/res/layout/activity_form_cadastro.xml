@@ -112,7 +112,7 @@
         android:hint="Senha"
         android:maxLength="25"
         android:drawableRight="@drawable/baseline_eye_24"
-        android:inputType="number"
+        android:inputType="numberPassword"
         />
 
     <androidx.appcompat.widget.AppCompatButton

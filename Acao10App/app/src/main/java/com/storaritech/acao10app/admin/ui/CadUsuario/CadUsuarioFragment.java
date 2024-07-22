@@ -14,7 +14,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -76,6 +78,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -96,7 +99,19 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
     StringRequest stringRequest;
     Bitmap bitmap;
     private String usuarioID;
+    Button btnFoto;
 
+
+    private static final int COD_SELECIONA = 10;
+    private static final int COD_FOTO = 20;
+    private static final int COD_PERMISSOES = 100;
+
+    private static final String PASTA_PRINCIPAL = "minhasImagensApp/";
+    private static final String PASTA_IMAGEM = "imagens";
+    private static final String DIRETORIO_IMAGEM = PASTA_PRINCIPAL + PASTA_IMAGEM;
+
+    private String path;
+    File fileImagem;
 
 
 
@@ -120,41 +135,141 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         editEmail = vista.findViewById(R.id.edit_CadUsu_email);
         editSenha = vista.findViewById(R.id.edit_CadUsu_Senha);
         GroupNivel = vista.findViewById(R.id.group_CadUsu_Usuario);
+
         imgFoto = vista.findViewById(R.id.img_CadUsu_Foto);
+
         btnCadastrar = vista.findViewById(R.id.btn_CadUsu_Cadastro);
         btnEditar = vista.findViewById(R.id.btn_CadUsu_Editar);
         btnRemover = vista.findViewById(R.id.btn_CadUsu_Deletar);
+        btnFoto = vista.findViewById(R.id.btn_CadUsu_Img);
+
         radioUsuario = vista.findViewById(R.id.radio_CadUsu_Usuario);
         radioAdmin = vista.findViewById(R.id.radio_CadUsu_Admin);
 
 
+        btnFoto.setOnClickListener(v -> {
 
+            carregarDialog();
 
-
-        btnCadastrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //Esconde Teclado
-                //InputMethodManager imm = (InputMethodManager) getSystemService(FormMenu_Admin.INPUT_METHOD_SERVICE);
-                //if(imm.isActive())
-                   // imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
-
-                String nome = editNome.getText().toString();
-                String email = editEmail.getText().toString();
-                String senha = editSenha.getText().toString();
-
-                if(nome.isEmpty() || email.isEmpty() || senha.isEmpty()){
-                    Snackbar snackbar = Snackbar.make(v, "Preencha todos os campos", Snackbar.LENGTH_LONG);
-                    snackbar.setBackgroundTint(Color.WHITE);
-                    snackbar.setTextColor(Color.BLACK);
-                    snackbar.show();
-                }else{
-
-                    CadastrarUsuario(v);
-                }
-            }
         });
+
+
+        btnCadastrar.setOnClickListener(v -> {
+
+            String nome = editNome.getText().toString();
+            String email = editEmail.getText().toString();
+            String senha = editSenha.getText().toString();
+
+            if(nome.isEmpty() || email.isEmpty() || senha.isEmpty()){
+                Snackbar snackbar = Snackbar.make(v, "Preencha todos os campos", Snackbar.LENGTH_LONG);
+                snackbar.setBackgroundTint(Color.WHITE);
+                snackbar.setTextColor(Color.BLACK);
+                snackbar.show();
+            }else{
+
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if(task.isSuccessful()){
+
+                            String ip = getString(R.string.ip);
+                            String url = ip + "/acao10/api/usuarios/registroimg.php";
+
+                            stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+                                @Override
+                                public void onResponse(String response) {
+
+
+                                    if (response.trim().equalsIgnoreCase("registra")) {
+                                        editId.setText("");
+                                        editNome.setText("");
+                                        editEmail.setText("");
+                                        editSenha.setText("");
+                                        radioUsuario.setChecked(true);
+                                        imgFoto.setImageResource(R.drawable.sem_foto);
+
+
+                                        Toast.makeText(getContext(), "Registrado com sucesso", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getContext(), "Registro não inserido", Toast.LENGTH_SHORT).show();
+                                        Log.i("RESPOSTA: ", "" + response);
+
+                                    }
+
+                                }
+
+                            }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Toast.makeText(getContext(), "Erro ao Registrar", Toast.LENGTH_SHORT).show();
+
+                                }
+                            }) {
+                                @Override
+                                protected Map<String, String> getParams() throws AuthFailureError {
+                                    usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    String id = usuarioID;
+                                    String nome = editNome.getText().toString();
+                                    String email = editEmail.getText().toString();
+                                    String senha = editSenha.getText().toString();
+                                    String pnivel = "admin";
+                                    String imagem = converterImgString(bitmap);
+                                    //String urlImagem = "/imagens/" + nome + "jpg";
+
+                                    Map<String, String> parametros = new HashMap<>();
+                                    parametros.put("id", id);
+                                    parametros.put("nome", nome);
+                                    parametros.put("email", email);
+                                    parametros.put("senha", senha);
+                                    parametros.put("nivel", pnivel);
+                                    parametros.put("imagem", imagem);
+                                    //parametros.put("url_imagem", urlImagem);
+
+
+
+                                    return parametros;
+                                }
+
+                            };
+
+                            //resquest.add(stringRequest);
+
+                            MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+
+                        }else{
+
+                            String erro;
+                            try{
+                                throw task.getException();
+
+
+                            }catch(FirebaseAuthWeakPasswordException e) {
+                                erro = "Digite uma senha com no minimo 6 caracteres";
+                            }catch (FirebaseAuthUserCollisionException e) {
+                                erro = "Está conta já existe!";
+                            }catch (FirebaseAuthInvalidCredentialsException e){
+                                erro = "Email inválido";
+                            }catch (Exception e){
+                                erro = "Erro ao cadastrar usuário";
+                            }
+
+                            Snackbar snackbar = Snackbar.make(v, erro, Snackbar.LENGTH_LONG);
+                            snackbar.setBackgroundTint(Color.WHITE);
+                            snackbar.setTextColor(Color.BLACK);
+                            snackbar.show();
+
+                        }
+                    }
+                });
+            }
+
+        });
+
+
+
+
 
         btnRemover.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -203,6 +318,97 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         return vista;
     }
 
+    private void carregarDialog() {
+
+        final CharSequence[] opcoes = {"Tirar Foto", "Selecionar da Galeria", "Cancelar"};
+        final AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+        builder.setTitle("Escolha uma Opção");
+        builder.setItems(opcoes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(opcoes[i].equals("Tirar Foto")){
+                    abrirCamera();
+
+                }else{
+                    if (opcoes[i].equals("Selecionar da Galeria")){
+                        Intent intent = new Intent(Intent.ACTION_PICK,
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.setType("image/");
+                        startActivityForResult(intent.createChooser(intent,"Selecione"),COD_SELECIONA);
+
+                    }else{
+                        dialogInterface.dismiss();
+                    }
+                }
+            }
+        });
+        builder.show();
+
+
+
+
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode, data);
+
+        switch (requestCode){
+            case COD_SELECIONA:
+                Uri tabUsuario=data.getData();
+                imgFoto.setImageURI(tabUsuario);
+
+                try {
+                    bitmap=MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),tabUsuario);
+                    imgFoto.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                break;
+
+
+            case COD_FOTO:
+
+                //Toast.makeText(getContext(), "Abriu a Camera", Toast.LENGTH_SHORT).show();
+
+
+                MediaScannerConnection.scanFile(getContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("Path", "" + path);
+                    }
+                });
+                bitmap = BitmapFactory.decodeFile(path);
+                imgFoto.setImageBitmap(bitmap);
+                break;
+        }
+
+       // bitmap = redimensionarImagem(bitmap, 600, 600);
+    }
+
+    private void abrirCamera() {
+        File meuFile = new File(Environment.getExternalStorageDirectory(), DIRETORIO_IMAGEM);
+        boolean estaCriada = meuFile.exists();
+
+        if(estaCriada == false){
+            estaCriada = meuFile.mkdirs();
+        }
+
+        if (estaCriada == true){
+            Long consecultivo = System.currentTimeMillis()/1000;
+            String nome =  consecultivo.toString() + ".jpg";
+
+            path = Environment.getExternalStorageDirectory() + File.separator + DIRETORIO_IMAGEM + File.separator + nome;
+            fileImagem = new File(path);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+            startActivityForResult(intent, COD_FOTO);
+        }
+
+    }
 
 
     private void carregarWEBServiceAtualizar() {
@@ -242,7 +448,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 String nivel = "usuario";
                 String imagem = "";
                 //String imagem = converterImgString(bitmap);
-                //String url = "imagens/" + campoCodigo.getText().toString() + ".jpg;"
+                String url = "imagens/" + editId.getText().toString() + ".jpg";
 
 
                 Map<String, String> parametros = new HashMap<>();
@@ -273,7 +479,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         ByteArrayOutputStream array=new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG,100,array);
         byte[] imagemByte=array.toByteArray();
-        String imagemString= android.util.Base64.encodeToString(imagemByte, android.util.Base64.DEFAULT);
+        String imagemString = android.util.Base64.encodeToString(imagemByte, android.util.Base64.DEFAULT);
 
         return imagemString;
     }
@@ -289,112 +495,12 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
 
     private void CadastrarUsuario(View v){
-        String nome = editNome.getText().toString();
-        String email = editEmail.getText().toString();
-        String senha = editSenha.getText().toString();
-
-        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, senha).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                if(task.isSuccessful()){
-
-                    SalvarDadosUsuario();
-
-
-                    //Snackbar snackbar = Snackbar.make(v, "Cadastro realizado com sucesso!!!", Snackbar.LENGTH_LONG);
-                    //snackbar.setBackgroundTint(Color.WHITE);
-                    //snackbar.setTextColor(Color.BLACK);
-                    //snackbar.show();
-
-                }else{
-                    String erro;
-                    try{
-                        throw task.getException();
-
-
-                    }catch(FirebaseAuthWeakPasswordException e) {
-                        erro = "Digite uma senha com no minimo 6 caracteres";
-                    }catch (FirebaseAuthUserCollisionException e) {
-                        erro = "Está conta já existe!";
-                    }catch (FirebaseAuthInvalidCredentialsException e){
-                        erro = "Email inválido";
-                    }catch (Exception e){
-                        erro = "Erro ao cadastrar usuário";
-                    }
-
-                    Snackbar snackbar = Snackbar.make(v, erro, Snackbar.LENGTH_LONG);
-                    snackbar.setBackgroundTint(Color.WHITE);
-                    snackbar.setTextColor(Color.BLACK);
-                    snackbar.show();
-
-                }
-            }
-        });
-
-    }
-
-    private void SalvarDadosUsuario() {
-        usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        String nome = editNome.getText().toString();
-        String email = editEmail.getText().toString();
-        String senha = editSenha.getText().toString();
-
-        int selectedId = GroupNivel.getCheckedRadioButtonId();
-        RadioButton radioButton = GroupNivel.findViewById(selectedId);
-        String nivel =  radioButton.getText().toString().toLowerCase();
-
-        if (nivel.equals("usuário")){
-            nivel = "usuario";
-        }
-        else if(nivel.equals("administrador")){
-                nivel = "admin";
-            }
-
-
-        //carregarWebService
-        String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/login/registro.php?id="+usuarioID+"&nome="+nome+"&email="+email+"&senha="+senha+"&nivel="+nivel+"&url_imagem=imagens/sem_foto.jpg";
-        url = url.replace(" ", "%20");
-
-        //edit_nome.setText(url);
-
-        jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                editId.setText("");
-                editNome.setText("");
-                editEmail.setText("");
-                editSenha.setText("");
-                imgFoto.setImageResource(R.drawable.sem_foto);
-                carregarWEBServiceListaUsuarios();
-                Toast.makeText(getContext(), "Cadastro realizado com sucesso!!!", Toast.LENGTH_LONG).show();
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "Não foi possivel efetuar a consulta " + error.toString(), Toast.LENGTH_LONG).show();
-                Log.i("ERRO", error.toString());
-
-
-                FirebaseUser usuarioAtual = FirebaseAuth.getInstance().getCurrentUser();
-                usuarioAtual.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        Toast.makeText(getContext(), "Foi deletado no firebase", Toast.LENGTH_LONG).show();
-                    }
-                });
-
-
-            }
-        });
-
-        //resquest.add(jsonObjectReq);
-        MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectReq);
 
 
     }
+
+    private void SalvarDadosUsuario() {}
+
 
     private void carregarWEBServiceConsultaUsuario(String IdClick) {
 
@@ -439,19 +545,15 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 }
 
 
-                /**
-                 *  RadioGroup aqui!!!!
-                 */
-
 
                 String ip = getString(R.string.ip);
 
 
                 String urlImagem = ip+"/acao10/api/usuarios/" + tabUsuario.getUrl_imagem();
-                //Toast.makeText(getContext(), "Url " + urlImagem, Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Url " + urlImagem, Toast.LENGTH_LONG).show();
 
 
-                carregarWEBServiceImg(urlImagem);
+                //carregarWEBServiceImg(urlImagem);
 
 
 
@@ -520,8 +622,9 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                     usuario.setId(jsonObject.optString("id"));
                     usuario.setNome(jsonObject.optString("nome"));
                     usuario.setEmail(jsonObject.optString("email"));
-                    usuario.setSenha(jsonObject.optString("senha"));
+                    //usuario.setSenha(jsonObject.optString("senha"));
                     usuario.setNivel(jsonObject.optString("nivel"));
+                    usuario.setUrl_imagem(jsonObject.optString("url_imagem"));
                     listaUsuarios.add(usuario);
 
 

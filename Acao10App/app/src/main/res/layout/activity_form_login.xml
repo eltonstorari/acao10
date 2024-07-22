@@ -99,8 +99,8 @@
         android:hint="Senha"
         android:maxLength="25"
         android:drawableRight="@drawable/baseline_eye_24"
-        android:inputType="number"
         android:visibility="visible"
+        android:inputType="numberPassword"
         />
 
     <androidx.appcompat.widget.AppCompatButton
@@ -191,10 +191,11 @@
         android:layout_marginRight="40dp"
         android:layout_marginTop="10dp"
         android:visibility="invisible"
-        android:text="Elton"
+        android:text=""
         android:textSize="20sp"
         android:textStyle="bold"
         android:textAllCaps="true"
+
 
 
         />

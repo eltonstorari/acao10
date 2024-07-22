@@ -136,21 +136,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
         txt_Login_Logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                txt_login_Bemvindo.setVisibility(View.INVISIBLE);
-                txt_Login_Logout.setVisibility(View.INVISIBLE);
-                txt_Login_NomeUsuario.setVisibility(View.INVISIBLE);
-
-
-
-                txt_NivelLogin.setText("UsuarioId");
-                bt_entrar.setText("Localizar");
-                bt_entrar.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.VISIBLE);
-                edit_email.setVisibility(View.VISIBLE);
-                edit_senha.setVisibility(View.VISIBLE);
-                text_tela_cadastro.setVisibility(View.VISIBLE);
-                progressBar.setVisibility(View.INVISIBLE);
+                sigOut();
             }
         });
 
@@ -162,6 +148,24 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
 
 
         });
+    }
+
+    private void sigOut() {
+        FirebaseAuth.getInstance().signOut();
+        txt_login_Bemvindo.setVisibility(View.INVISIBLE);
+        txt_Login_Logout.setVisibility(View.INVISIBLE);
+        txt_Login_NomeUsuario.setVisibility(View.INVISIBLE);
+
+
+
+        txt_NivelLogin.setText("UsuarioId");
+        bt_entrar.setText("Localizar");
+        bt_entrar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
+        edit_email.setVisibility(View.VISIBLE);
+        edit_senha.setVisibility(View.VISIBLE);
+        text_tela_cadastro.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
     }
 
     private void AutenticarUsuario() {
@@ -257,18 +261,22 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
                 }catch (JSONException e){
                     e.printStackTrace();
                 }
-                    txt_NivelLogin.setText(tabUsuarios.getNivel());
-                    txt_Login_NomeUsuario.setText(tabUsuarios.getNome());
-                    bt_entrar.setText("Entrar Agora! ");
-                    bt_entrar.setVisibility(View.VISIBLE);
-                    progressBar.setVisibility(View.INVISIBLE);
-                    edit_email.setVisibility(View.INVISIBLE);
-                    edit_senha.setVisibility(View.INVISIBLE);
-                    text_tela_cadastro.setVisibility(View.INVISIBLE);
+                    if(tabUsuarios.getNome().equalsIgnoreCase("Código não existe no banco!") ){
+                       sigOut();
+                    }else {
+                        txt_NivelLogin.setText(tabUsuarios.getNivel());
+                        txt_Login_NomeUsuario.setText(tabUsuarios.getNome());
+                        bt_entrar.setText("Entrar Agora! ");
+                        bt_entrar.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.INVISIBLE);
+                        edit_email.setVisibility(View.INVISIBLE);
+                        edit_senha.setVisibility(View.INVISIBLE);
+                        text_tela_cadastro.setVisibility(View.INVISIBLE);
 
-                    txt_login_Bemvindo.setVisibility(View.VISIBLE);
-                    txt_Login_Logout.setVisibility(View.VISIBLE);
-                    txt_Login_NomeUsuario.setVisibility(View.VISIBLE);
+                        txt_login_Bemvindo.setVisibility(View.VISIBLE);
+                        txt_Login_Logout.setVisibility(View.VISIBLE);
+                        txt_Login_NomeUsuario.setVisibility(View.VISIBLE);
+                    }
             }
         }, new Response.ErrorListener() {
             @Override
