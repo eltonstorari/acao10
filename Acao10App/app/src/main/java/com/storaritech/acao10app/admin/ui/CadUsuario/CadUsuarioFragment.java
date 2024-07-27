@@ -16,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +84,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
 
 
 public class CadUsuarioFragment extends Fragment implements Response.Listener<JSONObject>, Response.ErrorListener, RecyclerViwerInterface {
@@ -92,7 +97,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
 
     EditText editId, editNome, editEmail, editSenha;
-    RadioGroup GroupNivel;
+    RadioGroup radioGroupNivel;
     RadioButton radioUsuario, radioAdmin;
     ImageView imgFoto;
     FloatingActionButton btnCadastrar, btnEditar, btnRemover;
@@ -104,7 +109,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
     private static final int COD_SELECIONA = 10;
     private static final int COD_FOTO = 20;
-    private static final int COD_PERMISSOES = 100;
+    private static final int COD_PERMISSAO = 100;
 
     private static final String PASTA_PRINCIPAL = "minhasImagensApp/";
     private static final String PASTA_IMAGEM = "imagens";
@@ -127,32 +132,26 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this.getContext()));
         recyclerUsuarios.setHasFixedSize(true);
         request = Volley.newRequestQueue(getContext());
-
-        carregarWEBServiceListaUsuarios();
-
         editId = vista.findViewById(R.id.edit_CadUsu_id);
         editNome = vista.findViewById(R.id.edit_CadUsu_nome);
         editEmail = vista.findViewById(R.id.edit_CadUsu_email);
         editSenha = vista.findViewById(R.id.edit_CadUsu_Senha);
-        GroupNivel = vista.findViewById(R.id.group_CadUsu_Usuario);
-
+        radioGroupNivel = vista.findViewById(R.id.group_CadUsu_Usuario);
         imgFoto = vista.findViewById(R.id.img_CadUsu_Foto);
-
         btnCadastrar = vista.findViewById(R.id.btn_CadUsu_Cadastro);
         btnEditar = vista.findViewById(R.id.btn_CadUsu_Editar);
         btnRemover = vista.findViewById(R.id.btn_CadUsu_Deletar);
         btnFoto = vista.findViewById(R.id.btn_CadUsu_Img);
-
         radioUsuario = vista.findViewById(R.id.radio_CadUsu_Usuario);
         radioAdmin = vista.findViewById(R.id.radio_CadUsu_Admin);
 
+        carregarWEBServiceListaUsuarios();
 
         btnFoto.setOnClickListener(v -> {
 
             carregarDialog();
 
         });
-
 
         btnCadastrar.setOnClickListener(v -> {
 
@@ -210,11 +209,22 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                                 @Override
                                 protected Map<String, String> getParams() throws AuthFailureError {
                                     usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                    int selectedId = radioGroupNivel.getCheckedRadioButtonId();
+                                    RadioButton radioButton = radioGroupNivel.findViewById(selectedId);
+                                    String nivel =  radioButton.getText().toString().toLowerCase();
+
+                                    if (nivel.equals("usuário")){
+                                        nivel = "usuario";
+                                    }
+                                    else if(nivel.equals("administrador")){
+                                        nivel = "admin";
+                                    }
+
                                     String id = usuarioID;
                                     String nome = editNome.getText().toString();
                                     String email = editEmail.getText().toString();
                                     String senha = editSenha.getText().toString();
-                                    String pnivel = "admin";
+
                                     String imagem = converterImgString(bitmap);
                                     //String urlImagem = "/imagens/" + nome + "jpg";
 
@@ -223,7 +233,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                                     parametros.put("nome", nome);
                                     parametros.put("email", email);
                                     parametros.put("senha", senha);
-                                    parametros.put("nivel", pnivel);
+                                    parametros.put("nivel", nivel);
                                     parametros.put("imagem", imagem);
                                     //parametros.put("url_imagem", urlImagem);
 
@@ -244,6 +254,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                             try{
                                 throw task.getException();
 
+                
 
                             }catch(FirebaseAuthWeakPasswordException e) {
                                 erro = "Digite uma senha com no minimo 6 caracteres";
@@ -265,32 +276,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 });
             }
 
-        });
-
-
-
-
-
-        btnRemover.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String id = editId.getText().toString();
-
-                if(id.isEmpty()){
-                    Snackbar snackbar = Snackbar.make(v, "Selecione primeiramente o usuário!", Snackbar.LENGTH_LONG);
-                    snackbar.setBackgroundTint(Color.WHITE);
-                    snackbar.setTextColor(Color.BLACK);
-                    snackbar.show();
-                }else{
-
-
-                    carregarWEBServiceRemover(id);
-
-
-                }
-
-            }
         });
 
         btnEditar.setOnClickListener(new View.OnClickListener() {
@@ -315,7 +300,115 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
             }
         });
 
+        btnRemover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String id = editId.getText().toString();
+
+                if(id.isEmpty()){
+                    Snackbar snackbar = Snackbar.make(v, "Selecione primeiramente o usuário!", Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
+                }else{
+
+
+                    carregarWEBServiceRemover(id);
+
+
+                }
+
+            }
+        });
+
+        imgFoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                carregarDialog();
+            }
+        });
+
+        if(solicitarPermissoesVersoesSuperiores()){
+            btnFoto.setEnabled(true);
+
+        }else{
+            btnFoto.setEnabled(false);
+        }
         return vista;
+    }
+
+
+    //Solicitações de permissões
+    //ver se as permissıes foram aceitas
+    private boolean solicitarPermissoesVersoesSuperiores() {
+        if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M){//validar se estamos em vers„o de android menor que 6 para solicitar permissoes
+            return true;
+        }
+
+        //ver se as permissıes foram aceitas
+        if((getContext().checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)&&getContext().checkSelfPermission(CAMERA)==PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+
+
+        if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)||(shouldShowRequestPermissionRationale(CAMERA)))){
+            carregarDialogoRecomendacao();
+        }else{
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, CAMERA}, COD_PERMISSAO);
+        }
+
+        return false;//processa o evento dependendo do que se defina aqui
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode==COD_PERMISSAO){
+            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){//REPRESENTA DUAS PERMISSOES
+                Toast.makeText(getContext(),"Permissıes Aceitas",Toast.LENGTH_SHORT);
+                btnFoto.setEnabled(true);
+            }
+        }else{
+            solicitarPermissoesManual();
+        }
+    }
+
+    private void solicitarPermissoesManual() {
+        final CharSequence[] opciones={"sim","não"};
+        final AlertDialog.Builder alertOpciones=new AlertDialog.Builder(getContext());
+        alertOpciones.setTitle("Deseja configurar as permissões manualmente?");
+        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (opciones[i].equals("sim")){
+                    Intent intent=new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri=Uri.fromParts("package",getContext().getPackageName(),null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(),"Permissões Aceitas",Toast.LENGTH_SHORT).show();
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        alertOpciones.show();
+    }
+
+    private void carregarDialogoRecomendacao() {
+        AlertDialog.Builder dialogo=new AlertDialog.Builder(getContext());
+        dialogo.setTitle("Permissões Desativadas");
+        dialogo.setMessage("Deve aceitar as permissıes para funcionamento completo do App");
+
+        dialogo.setPositiveButton("Aceitar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+            }
+        });
+        dialogo.show();
     }
 
     private void carregarDialog() {
@@ -349,7 +442,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode, data);
@@ -372,7 +464,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
             case COD_FOTO:
 
-                //Toast.makeText(getContext(), "Abriu a Camera", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Abriu a Camera", Toast.LENGTH_SHORT).show();
 
 
                 MediaScannerConnection.scanFile(getContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
@@ -386,7 +478,28 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 break;
         }
 
-       // bitmap = redimensionarImagem(bitmap, 600, 600);
+        bitmap = redimensionarImagem(bitmap, 600, 600);
+    }
+
+    private Bitmap redimensionarImagem(Bitmap bitmap, float larguraNova, float alturaNova) {
+
+        int largura=bitmap.getWidth();
+        int altura=bitmap.getHeight();
+
+        if(largura>larguraNova || altura>alturaNova){
+            float escalaLargura=larguraNova/largura;
+            float escalaAltura= alturaNova/altura;
+
+            Matrix matrix=new Matrix();
+            matrix.postScale(escalaLargura,escalaAltura);
+
+            return Bitmap.createBitmap(bitmap,0,0,largura,altura,matrix,false);
+
+        }else{
+            return bitmap;
+        }
+
+
     }
 
     private void abrirCamera() {
@@ -405,74 +518,22 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
             fileImagem = new File(path);
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+
+
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
+            {
+                String authorities=getContext().getPackageName()+".provider";
+                Uri imageUri= FileProvider.getUriForFile(getContext(),authorities,fileImagem);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            }else
+            {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+            }
+
             startActivityForResult(intent, COD_FOTO);
         }
 
     }
-
-
-    private void carregarWEBServiceAtualizar() {
-                String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/usuarios/update.php?";
-
-        stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-
-
-                if (response.trim().equalsIgnoreCase("registra")) {
-
-                    Toast.makeText(getContext(), "Atualizando com sucesso!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Registro não Atualizado", Toast.LENGTH_SHORT).show();
-                    Log.i("RESPOSTA: ", "" + response);
-                }
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "Erro ao Atualizar", Toast.LENGTH_SHORT).show();
-
-            }
-        }) {
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                String id = editId.getText().toString();
-                String nome = editNome.getText().toString() + " ";
-                String email = editEmail.getText().toString();
-                String senha = editSenha.getText().toString();
-                String nivel = "usuario";
-                String imagem = "";
-                //String imagem = converterImgString(bitmap);
-                String url = "imagens/" + editId.getText().toString() + ".jpg";
-
-
-                Map<String, String> parametros = new HashMap<>();
-                parametros.put("id", id);
-                parametros.put("nome", nome);
-                parametros.put("email", email);
-                parametros.put("senha", senha);
-                parametros.put("nivel", "usuario");
-                parametros.put("imagem", imagem);
-
-
-                //parametros.put("url", url);
-
-
-                return parametros;
-            }
-
-        };
-
-        //resquest.add(stringRequest);
-        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
-    }
-
-
 
     private String converterImgString(Bitmap bitmap) {
 
@@ -492,15 +553,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         request.add(jsonObjectReq);
 
     }
-
-
-    private void CadastrarUsuario(View v){
-
-
-    }
-
-    private void SalvarDadosUsuario() {}
-
 
     private void carregarWEBServiceConsultaUsuario(String IdClick) {
 
@@ -553,7 +605,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 Toast.makeText(getContext(), "Url " + urlImagem, Toast.LENGTH_LONG).show();
 
 
-                //carregarWEBServiceImg(urlImagem);
+                carregarWEBServiceImg(urlImagem);
 
 
 
@@ -599,7 +651,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
     }
 
-
     @Override
     public void onErrorResponse(VolleyError volleyError) {
         Toast.makeText(getContext(), "Erro ao cadastrar no servidor!!! --->" + volleyError.toString(), Toast.LENGTH_LONG).show();
@@ -630,7 +681,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
                 }
 
-                UsuariosAdapter adapter = new UsuariosAdapter(listaUsuarios, this);
+                UsuariosAdapter adapter = new UsuariosAdapter(listaUsuarios, this, getContext());
                 recyclerUsuarios.setAdapter(adapter);
 
             }catch (JSONException e) {
@@ -643,9 +694,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
         }
     }
-
-
-
 
     @Override
     public void onitemClick(String IdPosition) {
@@ -666,6 +714,68 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
         Toast.makeText(getContext(), CRUD, Toast.LENGTH_LONG).show();
 
+    }
+
+    private void carregarWEBServiceAtualizar() {
+        String ip = getString(R.string.ip);
+        String url = ip + "/acao10/api/usuarios/update.php?";
+
+        stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+
+
+                if (response.trim().equalsIgnoreCase("registra")) {
+
+                    Toast.makeText(getContext(), "Atualizando com sucesso!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Registro não Atualizado", Toast.LENGTH_SHORT).show();
+                    Log.i("RESPOSTA: ", "" + response);
+                }
+
+            }
+
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Erro ao Atualizar", Toast.LENGTH_SHORT).show();
+
+            }
+        }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+
+                String id = editId.getText().toString();
+                String nome = editNome.getText().toString() + " ";
+                String email = editEmail.getText().toString();
+                String senha = editSenha.getText().toString();
+                String nivel = "usuario";
+                String imagem = "";
+                //String imagem = converterImgString(bitmap);
+                String url = "imagens/" + editId.getText().toString() + ".jpg";
+
+
+
+                Map<String, String> parametros = new HashMap<>();
+                parametros.put("id", id);
+                parametros.put("nome", nome);
+                parametros.put("email", email);
+                parametros.put("senha", senha);
+                parametros.put("nivel", "usuario");
+                parametros.put("imagem", imagem);
+
+
+                //parametros.put("url", url);
+
+
+                return parametros;
+            }
+
+        };
+
+        //resquest.add(stringRequest);
+        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
     }
 
     private void carregarWEBServiceRemover(String id) {
@@ -716,7 +826,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
 
     }
-
 
 
 }

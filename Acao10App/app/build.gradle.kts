@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.storaritech.acao10app"
         minSdk = 24
-        targetSdk = 32
+        targetSdk = 27
         versionCode = 1
         versionName = "1.0"
 
@@ -55,4 +55,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.android.volley:volley:1.2.1")
+    implementation("androidx.core:core:1.6.0")
+
+
+
+
+
 }

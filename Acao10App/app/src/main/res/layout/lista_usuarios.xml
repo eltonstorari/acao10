@@ -27,6 +27,17 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/nomeId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="0dp"
+                android:textStyle="bold"
+                android:text="Id do Usuário"
+                android:visibility="invisible"
+
+                />
+
+            <TextView
                 android:id="@+id/nomeUsuario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
