@@ -18,5 +18,7 @@ public class ModifUsuarioFragment extends Fragment {
                              Bundle savedInstanceState) {
         View vista = inflater.inflate(R.layout.fragment_modif_usuario, container, false);
         return  vista;
+
+
     }
 }

@@ -743,30 +743,39 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
             }
         }) {
+
+
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
 
-                String id = editId.getText().toString();
-                String nome = editNome.getText().toString() + " ";
+                usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                int selectedId = radioGroupNivel.getCheckedRadioButtonId();
+                RadioButton radioButton = radioGroupNivel.findViewById(selectedId);
+                String nivel =  radioButton.getText().toString().toLowerCase();
+
+                if (nivel.equalsIgnoreCase("usuário")){
+                    nivel = "usuario";
+                }
+                else if(nivel.equalsIgnoreCase("administrador")){
+                    nivel = "admin";
+                }
+
+                String id = usuarioID;
+                String nome = editNome.getText().toString();
                 String email = editEmail.getText().toString();
                 String senha = editSenha.getText().toString();
-                String nivel = "usuario";
-                String imagem = "";
-                //String imagem = converterImgString(bitmap);
-                String url = "imagens/" + editId.getText().toString() + ".jpg";
 
-
+                String imagem = converterImgString(bitmap);
+                //String urlImagem = "/imagens/" + nome + "jpg";
 
                 Map<String, String> parametros = new HashMap<>();
                 parametros.put("id", id);
                 parametros.put("nome", nome);
                 parametros.put("email", email);
                 parametros.put("senha", senha);
-                parametros.put("nivel", "usuario");
+                parametros.put("nivel", nivel);
                 parametros.put("imagem", imagem);
-
-
-                //parametros.put("url", url);
+                //parametros.put("url_imagem", urlImagem);
 
 
                 return parametros;
@@ -793,6 +802,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                     editEmail.setText("");
                     editSenha.setText("");
                     imgFoto.setImageResource(R.drawable.sem_foto);
+
                     carregarWEBServiceListaUsuarios();
                     Toast.makeText(getContext(), "Excluído com sucesso", Toast.LENGTH_SHORT).show();
                 } else {
