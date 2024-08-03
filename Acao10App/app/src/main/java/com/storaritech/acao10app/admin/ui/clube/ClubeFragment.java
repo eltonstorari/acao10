@@ -1,13 +1,33 @@
 package com.storaritech.acao10app.admin.ui.clube;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -34,6 +54,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +72,21 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
     EditText edit_clubeAdmin_id, edit_clubeAdmin_nome, edit_clubeAdmin_descricao, edit_clubeAdmin_telefone, edit_clubeAdmin_whatsapp, edit_clubeAdmin_cep, edit_clubeAdmin_cidade, edit_clubeAdmin_bairro, edit_clubeAdmin_rua, edit_clubeAdmin_numero, edit_clubeAdmin_email;
     StringRequest stringRequest;
     ImageView imgFoto;
+    Button btnFoto;
 
+    private static final int COD_SELECIONA = 10;
+    private static final int COD_FOTO = 20;
+    private static final int COD_PERMISSAO = 100;
+
+
+    private static final String PASTA_PRINCIPAL = "minhasImagensApp/";
+    private static final String PASTA_IMAGEM = "imagens";
+    private static final String DIRETORIO_IMAGEM = PASTA_PRINCIPAL + PASTA_IMAGEM;
+
+    Bitmap bitmap;
+
+    private String path;
+    File fileImagem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +104,7 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         btnEditar = vista.findViewById(R.id.btn_clubeAdmin_Editar);
         btnRemover = vista.findViewById(R.id.btn_clubeAdmin_Deletar);
 
+        edit_clubeAdmin_id = vista.findViewById(R.id.edit_clubeAdmin_id);
         edit_clubeAdmin_nome = vista.findViewById(R.id.edit_clubeAdmin_nome);
         edit_clubeAdmin_descricao = vista.findViewById(R.id.edit_clubeAdmin_descricao);
         edit_clubeAdmin_telefone = vista.findViewById(R.id.edit_clubeAdmin_telefone);
@@ -77,6 +115,9 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         edit_clubeAdmin_rua = vista.findViewById(R.id.edit_clubeAdmin_rua);
         edit_clubeAdmin_numero = vista.findViewById(R.id.edit_clubeAdmin_numero);
         edit_clubeAdmin_email = vista.findViewById(R.id.edit_clubeAdmin_email);
+        imgFoto = vista.findViewById(R.id.img_clubeAdmin_Foto);
+
+        btnFoto = vista.findViewById(R.id.btn_clubeAdmin_Img);
 
 
         carregarWEBServiceListaClubes();
@@ -101,6 +142,7 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
                         edit_clubeAdmin_numero.setText("");
                         edit_clubeAdmin_email.setText("");
 
+
                         imgFoto.setImageResource(R.drawable.sem_foto);
                         Toast.makeText(getContext(), "Registrado com sucesso", Toast.LENGTH_SHORT).show();
                     } else {
@@ -111,7 +153,7 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(getContext(), "Erro ao Registrar", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Erro ao Registrar-> " + error, Toast.LENGTH_SHORT).show();
                 }
             }) {
                 @Override
@@ -127,6 +169,8 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
                     String rua = edit_clubeAdmin_rua.getText().toString();
                     String numero = edit_clubeAdmin_numero.getText().toString();
                     String email = edit_clubeAdmin_email.getText().toString();
+                    String imagem = converterImgString(bitmap);
+
 
                     Map<String, String> parametros = new HashMap<>();
                     parametros.put("nome", nome);
@@ -139,6 +183,7 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
                     parametros.put("rua", rua);
                     parametros.put("numero", numero);
                     parametros.put("email", email);
+                    parametros.put("imagem", imagem);
 
                     return parametros;
                 }
@@ -147,9 +192,162 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
             MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
         });
 
+        btnFoto.setOnClickListener(v -> {
+
+            carregarDialog();
+
+        });
+
+        if(solicitarPermissoesVersoesSuperiores()){
+            btnFoto.setEnabled(true);
+
+        }else{
+            btnFoto.setEnabled(false);
+        }
+
         return vista;
 
     }
+
+    private boolean solicitarPermissoesVersoesSuperiores() {
+        if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M){//validar se estamos em vers„o de android menor que 6 para solicitar permissoes
+            return true;
+        }
+
+        //ver se as permissıes foram aceitas
+        if((getContext().checkSelfPermission(WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_GRANTED)&&getContext().checkSelfPermission(CAMERA)==PackageManager.PERMISSION_GRANTED){
+            return true;
+        }
+
+
+        if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)||(shouldShowRequestPermissionRationale(CAMERA)))){
+            carregarDialogoRecomendacao();
+        }else{
+            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, CAMERA}, COD_PERMISSAO);
+        }
+
+        return false;//processa o evento dependendo do que se defina aqui
+    }
+
+    private void solicitarPermissoesManual() {
+        final CharSequence[] opciones={"sim","não"};
+        final AlertDialog.Builder alertOpciones=new AlertDialog.Builder(getContext());
+        alertOpciones.setTitle("Deseja configurar as permissões manualmente?");
+        alertOpciones.setItems(opciones, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (opciones[i].equals("sim")){
+                    Intent intent=new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri=Uri.fromParts("package",getContext().getPackageName(),null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getContext(),"Permissões Aceitas",Toast.LENGTH_SHORT).show();
+                    dialogInterface.dismiss();
+                }
+            }
+        });
+        alertOpciones.show();
+    }
+
+    private void carregarDialogoRecomendacao() {
+        AlertDialog.Builder dialogo=new AlertDialog.Builder(getContext());
+        dialogo.setTitle("Permissões Desativadas");
+        dialogo.setMessage("Deve aceitar as permissıes para funcionamento completo do App");
+
+        dialogo.setPositiveButton("Aceitar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE,CAMERA},100);
+            }
+        });
+        dialogo.show();
+    }
+
+    private void carregarDialog() {
+        final CharSequence[] opcoes = {"Tirar Foto", "Selecionar da Galeria", "Cancelar"};
+        final AlertDialog.Builder builder=new AlertDialog.Builder(getContext());
+        builder.setTitle("Escolha uma Opção");
+        builder.setItems(opcoes, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if(opcoes[i].equals("Tirar Foto")){
+                    abrirCamera();
+
+                }else{
+                    if (opcoes[i].equals("Selecionar da Galeria")){
+                        Intent intent = new Intent(Intent.ACTION_PICK,
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        intent.setType("image/");
+                        startActivityForResult(intent.createChooser(intent,"Selecione"),COD_SELECIONA);
+
+                    }else{
+                        dialogInterface.dismiss();
+                    }
+                }
+            }
+        });
+        builder.show();
+    }
+
+    private void abrirCamera() {
+        File meuFile = new File(Environment.getExternalStorageDirectory(), DIRETORIO_IMAGEM);
+        boolean estaCriada = meuFile.exists();
+
+        if(estaCriada == false){
+            estaCriada = meuFile.mkdirs();
+        }
+
+        if (estaCriada == true){
+            Long consecultivo = System.currentTimeMillis()/1000;
+            String nome =  consecultivo.toString() + ".jpg";
+
+            path = Environment.getExternalStorageDirectory() + File.separator + DIRETORIO_IMAGEM + File.separator + nome;
+            fileImagem = new File(path);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+
+
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
+            {
+                String authorities=getContext().getPackageName()+".provider";
+                Uri imageUri= FileProvider.getUriForFile(getContext(),authorities,fileImagem);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            }else
+            {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+            }
+
+            startActivityForResult(intent, COD_FOTO);
+        }
+
+    }
+
+    private String converterImgString(Bitmap bitmap) {
+
+        ByteArrayOutputStream array=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,array);
+        byte[] imagemByte=array.toByteArray();
+        String imagemString = android.util.Base64.encodeToString(imagemByte, android.util.Base64.DEFAULT);
+
+        return imagemString;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode==COD_PERMISSAO){
+            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){//REPRESENTA DUAS PERMISSOES
+                Toast.makeText(getContext(),"Permissıes Aceitas",Toast.LENGTH_SHORT);
+                btnFoto.setEnabled(true);
+            }
+        }else{
+            solicitarPermissoesManual();
+        }
+    }
+
 
     private void carregarWEBServiceListaClubes() {
 
@@ -157,6 +355,66 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         String url = ip + "/acao10/api/clubes/consultarLista.php";
         jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
         request.add(jsonObjectReq);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode, data);
+
+        switch (requestCode){
+            case COD_SELECIONA:
+                Uri tabUsuario=data.getData();
+                imgFoto.setImageURI(tabUsuario);
+
+                try {
+                    bitmap=MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),tabUsuario);
+                    imgFoto.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                break;
+
+
+            case COD_FOTO:
+
+                Toast.makeText(getContext(), "Abriu a Camera", Toast.LENGTH_SHORT).show();
+
+
+                MediaScannerConnection.scanFile(getContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("Path", "" + path);
+                    }
+                });
+                bitmap = BitmapFactory.decodeFile(path);
+                imgFoto.setImageBitmap(bitmap);
+                break;
+        }
+
+        bitmap = redimensionarImagem(bitmap, 600, 600);
+    }
+
+    private Bitmap redimensionarImagem(Bitmap bitmap, float larguraNova, float alturaNova) {
+
+        int largura=bitmap.getWidth();
+        int altura=bitmap.getHeight();
+
+        if(largura>larguraNova || altura>alturaNova){
+            float escalaLargura=larguraNova/largura;
+            float escalaAltura= alturaNova/altura;
+
+            Matrix matrix=new Matrix();
+            matrix.postScale(escalaLargura,escalaAltura);
+
+            return Bitmap.createBitmap(bitmap,0,0,largura,altura,matrix,false);
+
+        }else{
+            return bitmap;
+        }
+
+
     }
 
     @Override
