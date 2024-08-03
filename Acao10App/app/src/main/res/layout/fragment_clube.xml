@@ -134,6 +134,15 @@
             android:inputType="text"
             app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_rua" />
 
+        <EditText
+            android:id="@+id/edit_clubeAdmin_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Digite o email"
+            android:inputType="text"
+            app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_numero" />
+
         <ImageView
             android:id="@+id/img_clubeAdmin_Foto"
             android:layout_width="250dp"
@@ -143,7 +152,7 @@
             android:src="@drawable/sem_foto"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_numero" />
+            app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_email" />
 
 
 
