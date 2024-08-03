@@ -7,7 +7,14 @@
         <item
             android:id="@+id/nav_CadUsuario"
             android:icon="@drawable/baseline_people"
-            android:title="Usuarios" />
+            android:title="Cadastro de Usuarios" />
+
+        <item
+            android:id="@+id/nav_Clube"
+            android:icon="@drawable/baseline_clube_24"
+            android:title="Cadastro de Clubes" />
+
+
 
 
     </group>

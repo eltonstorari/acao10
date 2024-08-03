@@ -1,15 +1,9 @@
-package com.storaritech.acao10app.admin.ui.CadUsuario;
+package com.storaritech.acao10app.admin.ui.usuario;
 
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
-import static androidx.core.app.ActivityCompat.requestPermissions;
-import static androidx.core.app.ActivityCompat.shouldShowRequestPermissionRationale;
-import static androidx.core.content.ContextCompat.getSystemService;
-
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,7 +17,6 @@ import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -36,14 +29,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
@@ -58,11 +48,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
-import com.google.firebase.auth.FirebaseUser;
-import com.storaritech.acao10app.FormCadastro;
-import com.storaritech.acao10app.RecyclerViwerInterface;
+import com.storaritech.acao10app.Interface.RecyclerViwerInterface_Usuarios;
 import com.storaritech.acao10app.adaptador.UsuariosAdapter;
-import com.storaritech.acao10app.admin.FormMenu_Admin;
 import com.storaritech.acao10app.entidades.MySingleton;
 
 import com.android.volley.AuthFailureError;
@@ -84,12 +71,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import static android.Manifest.permission.CAMERA;
-import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 
-
-public class CadUsuarioFragment extends Fragment implements Response.Listener<JSONObject>, Response.ErrorListener, RecyclerViwerInterface {
+public class CadUsuarioFragment extends Fragment implements Response.Listener<JSONObject>, Response.ErrorListener, RecyclerViwerInterface_Usuarios {
     RecyclerView recyclerUsuarios;
     ArrayList<Usuario> listaUsuarios;
     RequestQueue request;
@@ -659,7 +643,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
     @Override
     public void onResponse(JSONObject response) {
-        {
+
 
             Usuario usuario = null;
             JSONArray json = response.optJSONArray("usuario");
@@ -693,7 +677,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
             }
 
         }
-    }
+
 
     @Override
     public void onitemClick(String IdPosition) {

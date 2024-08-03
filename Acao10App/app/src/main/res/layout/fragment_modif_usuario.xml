@@ -7,7 +7,7 @@
     android:backgroundTint="@color/white">
 <androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/constraintLayout"
-    tools:context=".admin.ui.CadUsuario.ModifUsuarioFragment"
+    tools:context=".admin.ui.usuario.ModifUsuarioFragment"
     android:orientation="vertical"
     android:layout_height="match_parent"
     android:layout_width="match_parent">

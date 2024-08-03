@@ -1,4 +1,4 @@
-package com.storaritech.acao10app.admin.ui.CadUsuario;
+package com.storaritech.acao10app.admin.ui.usuario;
 
 import android.os.Bundle;
 
