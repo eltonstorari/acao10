@@ -37,6 +37,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -48,6 +49,7 @@ import com.storaritech.acao10app.adaptador.ClubesAdapter;
 
 import com.storaritech.acao10app.entidades.Clube;
 import com.storaritech.acao10app.entidades.MySingleton;
+import com.storaritech.acao10app.entidades.Usuario;
 
 
 import org.json.JSONArray;
@@ -209,6 +211,247 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
 
     }
 
+
+
+    private void abrirCamera() {
+        File meuFile = new File(Environment.getExternalStorageDirectory(), DIRETORIO_IMAGEM);
+        boolean estaCriada = meuFile.exists();
+
+        if(estaCriada == false){
+            estaCriada = meuFile.mkdirs();
+        }
+
+        if (estaCriada == true){
+            Long consecultivo = System.currentTimeMillis()/1000;
+            String nome =  consecultivo.toString() + ".jpg";
+
+            path = Environment.getExternalStorageDirectory() + File.separator + DIRETORIO_IMAGEM + File.separator + nome;
+            fileImagem = new File(path);
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+
+
+            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
+            {
+                String authorities=getContext().getPackageName()+".provider";
+                Uri imageUri= FileProvider.getUriForFile(getContext(),authorities,fileImagem);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+            }else
+            {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
+            }
+
+            startActivityForResult(intent, COD_FOTO);
+        }
+
+    }
+
+    private String converterImgString(Bitmap bitmap) {
+
+        ByteArrayOutputStream array=new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG,100,array);
+        byte[] imagemByte=array.toByteArray();
+        String imagemString = android.util.Base64.encodeToString(imagemByte, android.util.Base64.DEFAULT);
+
+        return imagemString;
+    }
+
+    private void carregarWEBServiceListaClubes() {
+
+        String ip = getString(R.string.ip);
+        String url = ip + "/acao10/api/clubes/consultarLista.php";
+        jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
+        request.add(jsonObjectReq);
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        super.onActivityResult(requestCode,resultCode, data);
+
+        switch (requestCode){
+            case COD_SELECIONA:
+                Uri tabUsuario=data.getData();
+                imgFoto.setImageURI(tabUsuario);
+
+                try {
+                    bitmap=MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),tabUsuario);
+                    imgFoto.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+
+                break;
+
+
+            case COD_FOTO:
+
+                Toast.makeText(getContext(), "Abriu a Camera", Toast.LENGTH_SHORT).show();
+
+
+                MediaScannerConnection.scanFile(getContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
+                    @Override
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("Path", "" + path);
+                    }
+                });
+                bitmap = BitmapFactory.decodeFile(path);
+                imgFoto.setImageBitmap(bitmap);
+                break;
+        }
+
+        bitmap = redimensionarImagem(bitmap, 600, 600);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode==COD_PERMISSAO){
+            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){//REPRESENTA DUAS PERMISSOES
+                Toast.makeText(getContext(),"Permissıes Aceitas",Toast.LENGTH_SHORT);
+                btnFoto.setEnabled(true);
+            }
+        }else{
+            solicitarPermissoesManual();
+        }
+    }
+
+
+
+    @Override
+    public void onResponse(JSONObject response) {
+
+        Clube clube = null;
+        JSONArray json = response.optJSONArray("clube");
+        //JSONObject jsonObject = null;
+
+        try {
+            for (int i = 0; i < json.length(); i++) {
+                clube = new Clube();
+                JSONObject jsonObject = null;
+                jsonObject = json.getJSONObject(i);
+                clube.setId(jsonObject.optInt("id"));
+                clube.setNome(jsonObject.optString("nome"));
+                clube.setDescricao(jsonObject.optString("descricao"));
+                clube.setTelefone(jsonObject.optString("telefone"));
+                clube.setWhatsapp(jsonObject.optString("whatsapp"));
+                clube.setCep(jsonObject.optString("cep"));
+                clube.setCidade(jsonObject.optString("cidade"));
+                clube.setBairro(jsonObject.optString("bairro"));
+                clube.setRua(jsonObject.optString("rua"));
+                clube.setNumero(jsonObject.optString("numero"));
+                clube.setEmail(jsonObject.optString("email"));
+                clube.setUrl_logo(jsonObject.optString("url_logo"));
+                listaClubes.add(clube);
+            }
+
+            ClubesAdapter adapter = new ClubesAdapter(listaClubes,  this, getContext());
+            recyclerClubes.setAdapter(adapter);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "Não foi possivel listar os usuarios!!! --->" + response, Toast.LENGTH_LONG).show();
+
+
+        }
+    }
+    @Override
+    public void onErrorResponse(VolleyError volleyError) {
+        Toast.makeText(getContext(), "Erro ao cadastrar no servidor!!! --->" + volleyError.toString(), Toast.LENGTH_LONG).show();
+
+    }
+
+
+
+    @Override
+    public void onitemClick(String IdPosition) {
+
+        String ip = getString(R.string.ip);
+
+        String url = ip + "/acao10/api/clubes/consultarClubeUrl.php?id=" + IdPosition;
+        url = url.replace(" ", "%20");
+        jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Clube tabClube = new Clube();
+                JSONArray json = response.optJSONArray("clube");
+                JSONObject jsonObject  = null;
+                try {
+                    jsonObject = json.getJSONObject(0);
+                    tabClube.setId(jsonObject.optInt("id"));
+                    tabClube.setNome(jsonObject.optString("nome"));
+                    tabClube.setDescricao(jsonObject.optString("descricao"));
+                    tabClube.setTelefone(jsonObject.optString("telefone"));
+                    tabClube.setWhatsapp(jsonObject.optString("Whatsapp"));
+                    tabClube.setCep(jsonObject.optString("cep"));
+                    tabClube.setCidade(jsonObject.optString("cidade"));
+                    tabClube.setBairro(jsonObject.optString("bairro"));
+                    tabClube.setRua(jsonObject.optString("rua"));
+                    tabClube.setNumero(jsonObject.optString("numero"));
+                    tabClube.setEmail(jsonObject.optString("email"));
+                    tabClube.setUrl_logo(jsonObject.optString("url_logo"));
+                }catch (JSONException e){
+                    e.printStackTrace();
+                }
+
+                edit_clubeAdmin_id.setText(Integer.toString(tabClube.getId()));
+                edit_clubeAdmin_nome.setText(tabClube.getNome());
+                edit_clubeAdmin_descricao.setText(tabClube.getDescricao());
+                edit_clubeAdmin_telefone.setText(tabClube.getTelefone());
+                edit_clubeAdmin_whatsapp.setText(tabClube.getWhatsapp());
+                edit_clubeAdmin_cep.setText(tabClube.getCep());
+                edit_clubeAdmin_cidade.setText(tabClube.getCidade());
+                edit_clubeAdmin_bairro.setText(tabClube.getBairro());
+                edit_clubeAdmin_rua.setText(tabClube.getRua());
+                edit_clubeAdmin_numero.setText(tabClube.getNumero() );
+                edit_clubeAdmin_email.setText(tabClube.getEmail());
+
+
+                String ip = getString(R.string.ip);
+                String urlImagem = ip+"/acao10/api/clubes/" + tabClube.getUrl_logo();
+                Toast.makeText(getContext(), "Url " + urlImagem, Toast.LENGTH_LONG).show();
+                carregarWEBServiceImg(urlImagem);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(getContext(), "Não foi possivel efetuar a consulta " + error.toString(), Toast.LENGTH_LONG).show();
+                Log.i("ERRO", error.toString());
+            }
+        });
+
+        //resquest.add(jsonObjectReq);
+        MySingleton.getInstance(getContext()).addToRequestQueue(jsonObjectReq);
+
+    }
+
+    private void carregarWEBServiceImg(String urlImagem) {
+        urlImagem = urlImagem.replace(" ", "%20");
+        ImageRequest imageReq  = new ImageRequest(urlImagem, new Response.Listener<Bitmap>() {
+            @Override
+            public void onResponse(Bitmap response) {
+
+                bitmap = response;
+                imgFoto.setImageBitmap(response);
+
+            }
+        }, 0, 0, ImageView.ScaleType.CENTER, null, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+                Toast.makeText(getContext(),"Erro ao carregar imagem...", Toast.LENGTH_LONG).show();
+                Log.i("ERRO IMAGE", "Response -> "+ error);
+
+            }
+        });
+
+        //resquest.add(imageReq);
+        MySingleton.getInstance(getContext()).addToRequestQueue(imageReq);
+
+    }
+
     private boolean solicitarPermissoesVersoesSuperiores() {
         if (Build.VERSION.SDK_INT<Build.VERSION_CODES.M){//validar se estamos em vers„o de android menor que 6 para solicitar permissoes
             return true;
@@ -291,111 +534,6 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         builder.show();
     }
 
-    private void abrirCamera() {
-        File meuFile = new File(Environment.getExternalStorageDirectory(), DIRETORIO_IMAGEM);
-        boolean estaCriada = meuFile.exists();
-
-        if(estaCriada == false){
-            estaCriada = meuFile.mkdirs();
-        }
-
-        if (estaCriada == true){
-            Long consecultivo = System.currentTimeMillis()/1000;
-            String nome =  consecultivo.toString() + ".jpg";
-
-            path = Environment.getExternalStorageDirectory() + File.separator + DIRETORIO_IMAGEM + File.separator + nome;
-            fileImagem = new File(path);
-            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
-
-
-            if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.N)
-            {
-                String authorities=getContext().getPackageName()+".provider";
-                Uri imageUri= FileProvider.getUriForFile(getContext(),authorities,fileImagem);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-            }else
-            {
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(fileImagem));
-            }
-
-            startActivityForResult(intent, COD_FOTO);
-        }
-
-    }
-
-    private String converterImgString(Bitmap bitmap) {
-
-        ByteArrayOutputStream array=new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG,100,array);
-        byte[] imagemByte=array.toByteArray();
-        String imagemString = android.util.Base64.encodeToString(imagemByte, android.util.Base64.DEFAULT);
-
-        return imagemString;
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if (requestCode==COD_PERMISSAO){
-            if(grantResults.length==2 && grantResults[0]==PackageManager.PERMISSION_GRANTED && grantResults[1]==PackageManager.PERMISSION_GRANTED){//REPRESENTA DUAS PERMISSOES
-                Toast.makeText(getContext(),"Permissıes Aceitas",Toast.LENGTH_SHORT);
-                btnFoto.setEnabled(true);
-            }
-        }else{
-            solicitarPermissoesManual();
-        }
-    }
-
-
-    private void carregarWEBServiceListaClubes() {
-
-        String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/clubes/consultarLista.php";
-        jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
-        request.add(jsonObjectReq);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode,resultCode, data);
-
-        switch (requestCode){
-            case COD_SELECIONA:
-                Uri tabUsuario=data.getData();
-                imgFoto.setImageURI(tabUsuario);
-
-                try {
-                    bitmap=MediaStore.Images.Media.getBitmap(getContext().getContentResolver(),tabUsuario);
-                    imgFoto.setImageBitmap(bitmap);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-
-                break;
-
-
-            case COD_FOTO:
-
-                Toast.makeText(getContext(), "Abriu a Camera", Toast.LENGTH_SHORT).show();
-
-
-                MediaScannerConnection.scanFile(getContext(), new String[]{path}, null, new MediaScannerConnection.OnScanCompletedListener() {
-                    @Override
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i("Path", "" + path);
-                    }
-                });
-                bitmap = BitmapFactory.decodeFile(path);
-                imgFoto.setImageBitmap(bitmap);
-                break;
-        }
-
-        bitmap = redimensionarImagem(bitmap, 600, 600);
-    }
-
     private Bitmap redimensionarImagem(Bitmap bitmap, float larguraNova, float alturaNova) {
 
         int largura=bitmap.getWidth();
@@ -414,55 +552,6 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
             return bitmap;
         }
 
-
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError volleyError) {
-        Toast.makeText(getContext(), "Erro ao cadastrar no servidor!!! --->" + volleyError.toString(), Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    public void onResponse(JSONObject response) {
-
-        Clube clube = null;
-        JSONArray json = response.optJSONArray("clube");
-        //JSONObject jsonObject = null;
-
-        try {
-            for (int i = 0; i < json.length(); i++) {
-                clube = new Clube();
-                JSONObject jsonObject = null;
-                jsonObject = json.getJSONObject(i);
-                clube.setId(jsonObject.optInt("id"));
-                clube.setNome(jsonObject.optString("nome"));
-                clube.setDescricao(jsonObject.optString("descricao"));
-                clube.setTelefone(jsonObject.optString("telefone"));
-                clube.setWhatsapp(jsonObject.optString("whatsapp"));
-                clube.setCep(jsonObject.optString("cep"));
-                clube.setCidade(jsonObject.optString("cidade"));
-                clube.setBairro(jsonObject.optString("bairro"));
-                clube.setRua(jsonObject.optString("rua"));
-                clube.setNumero(jsonObject.optString("numero"));
-                clube.setEmail(jsonObject.optString("email"));
-                clube.setUrl_logo(jsonObject.optString("url_logo"));
-                listaClubes.add(clube);
-            }
-
-            ClubesAdapter adapter = new ClubesAdapter(listaClubes,  this, getContext());
-            recyclerClubes.setAdapter(adapter);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Não foi possivel listar os usuarios!!! --->" + response, Toast.LENGTH_LONG).show();
-
-
-        }
-    }
-
-    @Override
-    public void onitemClick(String IdPosition) {
 
     }
 }
