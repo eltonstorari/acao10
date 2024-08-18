@@ -7,7 +7,7 @@
     android:backgroundTint="@color/white">
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
-        tools:context=".admin.ui.clube.ClubeFragment"
+        tools:context=".admin.ui.clube.clubeFragment"
         android:orientation="vertical"
         android:layout_height="match_parent"
         android:layout_marginStart="10dp"
@@ -104,7 +104,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="Digite a Cidade"
-            android:inputType="numberPassword"
+            android:inputType="text"
             app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_cep" />
 
         <EditText
@@ -113,7 +113,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="Digite a bairro"
-            android:inputType="numberPassword"
+            android:inputType="text"
             app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_cidade" />
 
         <EditText
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:hint="Digite o email"
-            android:inputType="text"
+            android:inputType="textEmailAddress"
             app:layout_constraintTop_toBottomOf="@id/edit_clubeAdmin_numero" />
 
         <ImageView

@@ -15,6 +15,11 @@
             android:title="Cadastro de Clubes" />
 
 
+        <item
+            android:id="@+id/nav_QRCode"
+            android:icon="@drawable/baseline_qr_code_24"
+            android:title="Cadastro de QRCode" />
+
 
 
     </group>

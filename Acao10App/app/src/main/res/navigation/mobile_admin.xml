@@ -13,9 +13,16 @@
 
     <fragment
         android:id="@+id/nav_Clube"
-        android:name="com.storaritech.acao10app.admin.ui.clube.ClubeFragment"
+        android:name="com.storaritech.acao10app.admin.ui.clube.clubeFragment"
         android:label="Cadastro de Clubes"
         tools:layout="@layout/fragment_clube" />
+
+
+    <fragment
+        android:id="@+id/nav_QRCode"
+        android:name="com.storaritech.acao10app.admin.ui.qrcode.qrcodeFragment"
+        android:label="Cadastro de QRCode"
+        tools:layout="@layout/fragment_qrcode" />
 
 
 </navigation>
