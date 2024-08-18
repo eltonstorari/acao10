@@ -98,10 +98,10 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
                 iniciarComponentes();
                 String nivel = txt_NivelLogin.getText().toString();
                 //Entra na tela do Usuário (Usuário/ Admin)
-                if (nivel.equals("usuario")){
+                if (nivel.equalsIgnoreCase("usuario")){
                     //Toast.makeText(getApplicationContext(), nivel, Toast.LENGTH_LONG).show();
                     TelaPrincipal_Usuario();
-                } else if (nivel.equals("admin")){
+                } else if (nivel.equalsIgnoreCase("admin")){
                     TelaPrincipal_Admin();
                     //Toast.makeText(getApplicationContext(), nivel, Toast.LENGTH_LONG).show();
                 }
@@ -121,10 +121,10 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
                         AutenticarUsuario();
 
                         //Entra na tela do Usuário (Usuário/ Admin)
-                        if (nivel.equals("usuario")){
+                        if (nivel.equalsIgnoreCase("usuario")){
                             //Toast.makeText(getApplicationContext(), nivel, Toast.LENGTH_LONG).show();
                             TelaPrincipal_Usuario();
-                        } else if (nivel.equals("admin")){
+                        } else if (nivel.equalsIgnoreCase("admin")){
                             TelaPrincipal_Admin();
                             //Toast.makeText(getApplicationContext(), nivel, Toast.LENGTH_LONG).show();
                         }

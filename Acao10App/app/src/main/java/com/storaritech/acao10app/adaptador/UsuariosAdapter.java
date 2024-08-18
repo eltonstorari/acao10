@@ -1,15 +1,10 @@
 package com.storaritech.acao10app.adaptador;
 
-import static android.provider.Settings.Global.getString;
-import static java.security.AccessController.getContext;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,23 +17,23 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.Volley;
+import com.storaritech.acao10app.Interface.RecyclerViwerInterface_Usuarios;
 import com.storaritech.acao10app.R;
-import com.storaritech.acao10app.RecyclerViwerInterface;
 import com.storaritech.acao10app.entidades.MySingleton;
 import com.storaritech.acao10app.entidades.Usuario;
 
 import java.util.List;
 
 public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.UsuariosHolder> {
-    private final RecyclerViwerInterface recyclerViwerInterface;
+    private final RecyclerViwerInterface_Usuarios recyclerViwerInterfaceUsuarios;
     List<Usuario>listaUsuarios;
     RequestQueue request;
     Context context;
 
 
-    public UsuariosAdapter(List<Usuario> listaUsuarios, RecyclerViwerInterface recyclerViwerInterface, Context context){
+    public UsuariosAdapter(List<Usuario> listaUsuarios, RecyclerViwerInterface_Usuarios recyclerViwerInterfaceUsuarios, Context context){
         this.listaUsuarios = listaUsuarios;
-        this.recyclerViwerInterface = recyclerViwerInterface;
+        this.recyclerViwerInterfaceUsuarios = recyclerViwerInterfaceUsuarios;
         this.context = context;
         request = Volley.newRequestQueue(context);
     }
@@ -55,7 +50,7 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.Usuari
 
 
 
-        return new UsuariosHolder(vista, recyclerViwerInterface);
+        return new UsuariosHolder(vista, recyclerViwerInterfaceUsuarios);
 
     }
 
@@ -113,7 +108,7 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.Usuari
     public class UsuariosHolder extends RecyclerView.ViewHolder {
         TextView txt_idConsulta, txt_nomeConsulta, txt_emailConsulta, txt_senhaConsulta, txt_nivelConsulta;
         ImageView idImagem;
-        public UsuariosHolder(@NonNull View itemView, RecyclerViwerInterface recyclerViwerInterface) {
+        public UsuariosHolder(@NonNull View itemView, RecyclerViwerInterface_Usuarios recyclerViwerInterfaceUsuarios) {
             super(itemView);
 
             txt_idConsulta = (TextView) itemView.findViewById(R.id.nomeId);
@@ -127,9 +122,9 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.Usuari
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (recyclerViwerInterface != null){
+                    if (recyclerViwerInterfaceUsuarios != null){
                         String IdResult = txt_idConsulta.getText().toString(); //"XSiYFQvkPPPF5wLAKM0KWh8u5qa2";
-                        recyclerViwerInterface.onitemClick(IdResult);
+                        recyclerViwerInterfaceUsuarios.onitemClick(IdResult);
 
                     }
 
