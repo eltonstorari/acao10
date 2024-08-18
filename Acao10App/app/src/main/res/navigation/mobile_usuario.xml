@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.storaritech.acao10app.admin.ui.clube.ClubeFragment"
+        android:name="com.storaritech.acao10app.admin.ui.clube.clubeFragment"
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_clube" />
 

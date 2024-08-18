@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -23,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,14 +42,13 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.auth.FirebaseAuth;
+import com.google.android.material.snackbar.Snackbar;
 import com.storaritech.acao10app.Interface.RecyclerViwerInterface_Clubes;
 import com.storaritech.acao10app.R;
 import com.storaritech.acao10app.adaptador.ClubesAdapter;
 
 import com.storaritech.acao10app.entidades.Clube;
 import com.storaritech.acao10app.entidades.MySingleton;
-import com.storaritech.acao10app.entidades.Usuario;
 
 
 import org.json.JSONArray;
@@ -61,11 +60,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public class ClubeFragment extends Fragment implements Response.Listener<JSONObject>, Response.ErrorListener, RecyclerViwerInterface_Clubes {
+public class clubeFragment extends Fragment implements Response.Listener<JSONObject>, Response.ErrorListener, RecyclerViwerInterface_Clubes {
     RecyclerView recyclerClubes;
     ArrayList<Clube> listaClubes;
     RequestQueue request;
@@ -120,6 +117,93 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         imgFoto = vista.findViewById(R.id.img_clubeAdmin_Foto);
 
         btnFoto = vista.findViewById(R.id.btn_clubeAdmin_Img);
+
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String id = edit_clubeAdmin_id.getText().toString();
+
+                if(id.isEmpty()){
+                    Snackbar snackbar = Snackbar.make(v, "Selecione primeiramente o clube!", Snackbar.LENGTH_LONG);
+                    snackbar.setBackgroundTint(Color.WHITE);
+                    snackbar.setTextColor(Color.BLACK);
+                    snackbar.show();
+                }else{
+
+
+                    String ip = getString(R.string.ip);
+                    String url = ip + "/acao10/api/clubes/update.php?";
+                    stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            if (response.trim().equalsIgnoreCase("registra")) {
+                                edit_clubeAdmin_id.setText("");
+                                edit_clubeAdmin_nome.setText("");
+                                edit_clubeAdmin_descricao.setText("");
+                                edit_clubeAdmin_telefone.setText("");
+                                edit_clubeAdmin_whatsapp.setText("");
+                                edit_clubeAdmin_cep.setText("");
+                                edit_clubeAdmin_cidade.setText("");
+                                edit_clubeAdmin_bairro.setText("");
+                                edit_clubeAdmin_rua.setText("");
+                                edit_clubeAdmin_numero.setText("");
+                                edit_clubeAdmin_email.setText("");
+                                imgFoto.setImageResource(R.drawable.sem_foto);
+                                Toast.makeText(getContext(), "Atualizando com sucesso!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), "Registro não Atualizado", Toast.LENGTH_SHORT).show();
+                                Log.i("RESPOSTA: ", "" + response);
+                            }
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getContext(), "Erro ao Atualizar", Toast.LENGTH_SHORT).show();
+                        }
+                    }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            String id = edit_clubeAdmin_id.getText().toString();
+                            String nome = edit_clubeAdmin_nome.getText().toString();
+                            String descricao = edit_clubeAdmin_descricao.getText().toString();
+                            String telefone = edit_clubeAdmin_telefone.getText().toString();
+                            String whatsapp = edit_clubeAdmin_whatsapp.getText().toString();
+                            String cep = edit_clubeAdmin_cep.getText().toString();
+                            String cidade = edit_clubeAdmin_cidade.getText().toString();
+                            String bairro = edit_clubeAdmin_bairro.getText().toString();
+                            String rua = edit_clubeAdmin_rua.getText().toString();
+                            String numero = edit_clubeAdmin_numero.getText().toString();
+                            String email = edit_clubeAdmin_email.getText().toString();
+                            String imagem = converterImgString(bitmap);
+
+
+                            Map<String, String> parametros = new HashMap<>();
+                            parametros.put("id", id);
+                            parametros.put("nome", nome);
+                            parametros.put("descricao", descricao);
+                            parametros.put("telefone", telefone);
+                            parametros.put("whatsapp", whatsapp);
+                            parametros.put("cep", cep);
+                            parametros.put("cidade", cidade);
+                            parametros.put("bairro", bairro);
+                            parametros.put("rua", rua);
+                            parametros.put("numero", numero);
+                            parametros.put("email", email);
+                            parametros.put("imagem", imagem);
+
+                            return parametros;
+                        }
+
+                    };
+
+                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+
+
+                }
+
+            }
+        });
 
 
         carregarWEBServiceListaClubes();
@@ -264,7 +348,6 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         request.add(jsonObjectReq);
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode,resultCode, data);
@@ -318,8 +401,6 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
         }
     }
 
-
-
     @Override
     public void onResponse(JSONObject response) {
 
@@ -352,7 +433,7 @@ public class ClubeFragment extends Fragment implements Response.Listener<JSONObj
 
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(getContext(), "Não foi possivel listar os usuarios!!! --->" + response, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Não foi possivel listar os clubes!!! --->" + response, Toast.LENGTH_LONG).show();
 
 
         }
