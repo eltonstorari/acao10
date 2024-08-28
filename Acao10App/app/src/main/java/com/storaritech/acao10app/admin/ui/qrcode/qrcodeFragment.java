@@ -71,7 +71,9 @@ public class qrcodeFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                generateQRCode(s.toString());
+                if (!s.toString().isEmpty()) {
+                    generateQRCode(s.toString());
+                }
             }
 
             @Override

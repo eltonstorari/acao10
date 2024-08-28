@@ -638,7 +638,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
     @Override
     public void onErrorResponse(VolleyError volleyError) {
         Toast.makeText(getContext(), "Erro ao cadastrar no servidor!!! --->" + volleyError.toString(), Toast.LENGTH_LONG).show();
-
+        Log.e("LISTAR USUARIO", volleyError.toString());
     }
 
     @Override
