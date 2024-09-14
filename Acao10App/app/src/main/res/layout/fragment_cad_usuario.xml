@@ -10,7 +10,8 @@
         tools:context=".admin.ui.usuario.CadUsuarioFragment"
         android:orientation="vertical"
         android:layout_height="match_parent"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:padding="10dp">
 
 
 
