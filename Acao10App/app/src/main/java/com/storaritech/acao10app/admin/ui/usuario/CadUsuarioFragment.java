@@ -112,7 +112,7 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         View vista = inflater.inflate(R.layout.fragment_cad_usuario, container, false);
 
         listaUsuarios=new ArrayList<>();
-        recyclerUsuarios = (RecyclerView)  vista.findViewById(R.id.idRecyclerUsuarios);
+        recyclerUsuarios = vista.findViewById(R.id.idRecyclerUsuarios);
         recyclerUsuarios.setLayoutManager(new LinearLayoutManager(this.getContext()));
         recyclerUsuarios.setHasFixedSize(true);
         request = Volley.newRequestQueue(getContext());
@@ -533,6 +533,8 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
         String ip = getString(R.string.ip);
         String url = ip + "/acao10/api/usuarios/consultarLista.php";
 
+
+
         jsonObjectReq = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
         request.add(jsonObjectReq);
 
@@ -588,6 +590,10 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 String urlImagem = ip+"/acao10/api/usuarios/" + tabUsuario.getUrl_imagem();
                 Toast.makeText(getContext(), "Url " + urlImagem, Toast.LENGTH_LONG).show();
 
+                // Limpa os dados existentes no adapter
+
+
+                // Atualiza o adapter com os novos dados
 
                 carregarWEBServiceImg(urlImagem);
 

@@ -26,19 +26,23 @@ import java.util.List;
 
 public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.UsuariosHolder> {
     private final RecyclerViwerInterface_Usuarios recyclerViwerInterfaceUsuarios;
-    List<Usuario>listaUsuarios;
+    static List<Usuario>listaUsuarios;
     RequestQueue request;
     Context context;
 
 
     public UsuariosAdapter(List<Usuario> listaUsuarios, RecyclerViwerInterface_Usuarios recyclerViwerInterfaceUsuarios, Context context){
+
         this.listaUsuarios = listaUsuarios;
         this.recyclerViwerInterfaceUsuarios = recyclerViwerInterfaceUsuarios;
         this.context = context;
         request = Volley.newRequestQueue(context);
+
+
+
     }
 
-    @NonNull
+   @NonNull
     @Override
     public UsuariosHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View vista = LayoutInflater.from(parent.getContext()).inflate(R.layout.lista_usuarios, parent, false);
@@ -136,5 +140,7 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.Usuari
 
         }
     }
+
+
 
 }
