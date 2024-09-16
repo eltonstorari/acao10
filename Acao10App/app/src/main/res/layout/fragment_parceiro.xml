@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="10dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="10dp"
+    tools:context=".admin.ui.parceiro.ParceiroFragment">
+
+    <LinearLayout
+        android:id="@+id/PropagandasId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/txt_parceiroAdmin_labelPropaganda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="T. de Propagandas: "
+            android:textSize="18sp"
+
+            />
+
+        <TextView
+            android:id="@+id/txt_parceiroAdmin_propaganda"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:text="pendente"
+            android:textStyle="bold"
+            />
+
+        <TextView
+            android:id="@+id/txt_parceiroAdmin_labelPropagandaAtivas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Ativas: "
+            android:textSize="18sp"
+            />
+
+        <TextView
+            android:id="@+id/txt_parceiroAdmin_propagandaAtivas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textSize="18sp"
+            android:text="pendente"
+            android:textStyle="bold"
+            />
+
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/CadastroId"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/PropagandasId">
+
+        <TextView
+            android:id="@+id/txt_parceiroAdmin_labelCadastro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:hint="Cadastro: "
+
+
+            />
+
+        <TextView
+            android:id="@+id/txt_parceiroAdmin_cadastro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textSize="18sp"
+            android:text="pendente"
+            android:textStyle="bold"
+            />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/LinearId"
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/CadastroId">
+
+        <EditText
+            android:id="@+id/edit_parceiroAdmin_cnpj"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="Insira o CNPJ"
+
+
+            />
+
+        <Button
+            android:id="@+id/btn_parceirosAdmin_Img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:background="@color/colorPrimaryDark"
+            android:text="Imagem"
+            android:textSize="12sp"
+
+            />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/edit_parceiroAdmin_nome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Insira o nome"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/LinearId" />
+
+    <EditText
+        android:id="@+id/edit_parceiroAdmin_whatsapp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Digite o Whatsapp"
+        android:inputType="phone"
+        app:layout_constraintTop_toBottomOf="@id/edit_parceiroAdmin_nome" />
+
+    <EditText
+        android:id="@+id/edit_parceiroAdmin_instagram"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Digite o Instagram"
+        android:inputType="text"
+        app:layout_constraintTop_toBottomOf="@id/edit_parceiroAdmin_whatsapp" />
+
+    <EditText
+        android:id="@+id/edit_parceiroAdmin_contato"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Digite o contato"
+        android:inputType="phone"
+        app:layout_constraintTop_toBottomOf="@id/edit_parceiroAdmin_instagram" />
+
+    <EditText
+        android:id="@+id/edit_parceiroAdmin_site"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:hint="Digite o site"
+        android:inputType="textWebEditText"
+        app:layout_constraintTop_toBottomOf="@id/edit_parceiroAdmin_contato" />
+
+    <ImageView
+        android:id="@+id/img_parceriosAdmin_Foto"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:src="@drawable/sem_foto"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/edit_parceiroAdmin_site" />
+
+
+
+
+    <TextView
+        android:id="@+id/txt_DesignerLinha2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="0dp"
+        android:background="@color/colorPrimaryDark"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/img_parceriosAdmin_Foto" />
+
+
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_parceirosAdmin_Cadastro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/fab_margin"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="@id/txt_DesignerLinha2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/baseline_send_24" />
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_parceirosAdmin_Editar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|end"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/colorPrimary"
+        app:layout_constraintEnd_toStartOf="@+id/btn_parceirosAdmin_Cadastro"
+        app:layout_constraintTop_toTopOf="@+id/btn_parceirosAdmin_Cadastro"
+        app:srcCompat="@drawable/baseline_edit_square_24" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_parceirosAdmin_Deletar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|end"
+        android:layout_marginEnd="20dp"
+        android:backgroundTint="@color/red"
+        app:layout_constraintEnd_toStartOf="@+id/btn_parceirosAdmin_Editar"
+        app:layout_constraintTop_toTopOf="@+id/btn_parceirosAdmin_Editar"
+        app:srcCompat="@drawable/baseline_delete_forever_24" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/img_parceriosAdmin_Foto"
+        tools:ignore="MissingConstraints">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/idRecyclerParceiros"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
