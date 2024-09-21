@@ -21,6 +21,12 @@
             android:title="Cadastro de QRCode" />
 
 
+        <item
+            android:id="@+id/nav_Parceiro"
+            android:icon="@drawable/baseline_escalator_24"
+            android:title="Cadastro de Parceiros" />
+
+
 
     </group>
 
