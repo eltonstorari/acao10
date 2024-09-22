@@ -24,5 +24,11 @@
         android:label="Cadastro de QRCode"
         tools:layout="@layout/fragment_qrcode" />
 
+    <fragment
+        android:id="@+id/nav_Propaganda"
+        android:name="com.storaritech.acao10app.admin.ui.propaganda.PropagandaFragment"
+        android:label="Cadastro de Propagandas"
+        tools:layout="@layout/fragment_propaganda" />
+
 
 </navigation>
