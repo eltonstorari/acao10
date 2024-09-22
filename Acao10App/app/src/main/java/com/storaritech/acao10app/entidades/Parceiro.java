@@ -1,11 +1,21 @@
 package com.storaritech.acao10app.entidades;
 
+import java.util.Date;
+
 public class Parceiro {
 
-            String cnpj, nome, cadastro, propaganda, propaganda_ativa, whatsapp, instagram, facebook, contato, site, url_logo;
-
+            String cnpj, nome, propaganda, propaganda_ativa, whatsapp, instagram, facebook, email, contato, site, url_logo;
+            Date  cadastro;
     public String getCnpj() {
         return cnpj;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setCnpj(String cnpj) {
@@ -20,11 +30,11 @@ public class Parceiro {
         this.nome = nome;
     }
 
-    public String getCadastro() {
+    public Date getCadastro() {
         return cadastro;
     }
 
-    public void setCadastro(String cadastro) {
+    public void setCadastro(Date cadastro) {
         this.cadastro = cadastro;
     }
 

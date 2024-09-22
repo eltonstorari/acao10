@@ -60,7 +60,7 @@
 
 
             <TextView
-                android:id="@+id/txt_ListaParceiro_Contato"
+                android:id="@+id/txt_ListaParceiro_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
