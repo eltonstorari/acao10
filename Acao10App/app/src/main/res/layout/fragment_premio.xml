@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:backgroundTint="@color/white">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        tools:context=".admin.ui.premio.PremioFragment"
+        android:orientation="vertical"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:padding="10dp">
+
+
+        <LinearLayout
+            android:id="@+id/LinearId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/edit_PremioAdmin_id"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:enabled="false"
+                android:hint="ID (Automático)"
+
+
+                />
+
+            <Button
+                android:id="@+id/btn_PremioAdmin_Img"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:background="@color/colorPrimaryDark"
+
+
+                android:text="Imagem"
+                android:textSize="12sp" />
+
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/edit_PremioAdmin_nome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Insira o nome"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/LinearId" />
+
+        <EditText
+            android:id="@+id/edit_PremioAdmin_descricao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Digite o email"
+            app:layout_constraintTop_toBottomOf="@id/edit_PremioAdmin_nome" />
+
+        <EditText
+            android:id="@+id/edit_PremioAdmin_estoque"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Estoque"
+            android:inputType="number"
+            app:layout_constraintTop_toBottomOf="@id/edit_PremioAdmin_descricao" />
+
+
+        <EditText
+            android:id="@+id/edit_PremioAdmin_triangulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:hint="Valor em Triângulo"
+            android:inputType="number"
+            app:layout_constraintTop_toBottomOf="@id/edit_PremioAdmin_estoque" />
+
+
+        <ImageView
+            android:id="@+id/img_PremioAdmin_Foto"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:src="@drawable/sem_foto"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/edit_PremioAdmin_triangulo" />
+
+
+        <TextView
+            android:id="@+id/txt_TituloListaPremio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:text="Lista de Prêmios"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/img_PremioAdmin_Foto" />
+
+        <TextView
+            android:id="@+id/txt_DesignerLinha2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/colorPrimaryDark"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_TituloListaPremio" />
+
+
+
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_CadUsu_Cadastro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="@id/txt_TituloListaPremio"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/baseline_send_24" />
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_CadUsu_Editar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/colorPrimary"
+            app:layout_constraintEnd_toStartOf="@+id/btn_CadUsu_Cadastro"
+            app:layout_constraintTop_toTopOf="@+id/btn_CadUsu_Cadastro"
+            app:srcCompat="@drawable/baseline_edit_square_24" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_CadUsu_Deletar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|end"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/red"
+            app:layout_constraintEnd_toStartOf="@+id/btn_CadUsu_Editar"
+            app:layout_constraintTop_toTopOf="@+id/btn_CadUsu_Editar"
+            app:srcCompat="@drawable/baseline_delete_forever_24" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@id/txt_TituloListaPremio"
+            tools:ignore="MissingConstraints">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/idRecyclerUsuarios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.core.widget.NestedScrollView>
