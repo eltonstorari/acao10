@@ -8,28 +8,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.storaritech.acao10app.R;
 import com.storaritech.acao10app.databinding.FragmentDoarAgoraBinding;
+
 
 public class DoarAgoraFragment extends Fragment {
 
-private FragmentDoarAgoraBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
-            ViewGroup container, Bundle savedInstanceState) {
+                             ViewGroup container, Bundle savedInstanceState) {
 
 
-    binding = FragmentDoarAgoraBinding.inflate(inflater, container, false);
-    View root = binding.getRoot();
+        View vista = inflater.inflate(R.layout.fragment_doar_agora, container, false);
 
 
-
-
-        return root;
+        return vista;
     }
 
-@Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null;
-    }
 }
+
