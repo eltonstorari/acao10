@@ -25,10 +25,10 @@
         tools:layout="@layout/fragment_qrcode" />
 
     <fragment
-        android:id="@+id/nav_Parceiro"
-        android:name="com.storaritech.acao10app.admin.ui.parceiro.ParceiroFragment"
-        android:label="Cadastro de Parceiros"
-        tools:layout="@layout/fragment_qrcode" />
+        android:id="@+id/nav_Premio"
+        android:name="com.storaritech.acao10app.admin.ui.premio.PremioFragment"
+        android:label="Cadastro de Prêmios"
+        tools:layout="@layout/fragment_premio" />
 
     <fragment
         android:id="@+id/nav_Propaganda"
