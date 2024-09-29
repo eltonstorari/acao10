@@ -22,9 +22,16 @@
 
 
         <item
+<<<<<<< HEAD
             android:id="@+id/nav_Premio"
             android:icon="@drawable/baseline_card_giftcard_24"
             android:title="Cadastro de Prêmios" />
+=======
+            android:id="@+id/nav_Propaganda"
+            android:icon="@drawable/baseline_propaganda_24"
+            android:title="Cadastro de Propagandas" />
+
+>>>>>>> propagandas
 
 
     </group>
