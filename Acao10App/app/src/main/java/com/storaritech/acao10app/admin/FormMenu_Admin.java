@@ -137,6 +137,7 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_CadUsuario, R.id.nav_Clube, R.id.nav_QRCode, R.id.nav_Parceiro, R.id.nav_Propaganda)
+
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_form_menu_admin);

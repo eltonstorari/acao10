@@ -36,5 +36,11 @@
         android:label="Cadastro de Propagandas"
         tools:layout="@layout/fragment_propaganda" />
 
+    <fragment
+        android:id="@+id/nav_Parceiro"
+        android:name="com.storaritech.acao10app.admin.ui.parceiro.ParceiroFragment"
+        android:label="Cadastro de Parceiros"
+        tools:layout="@layout/fragment_qrcode" />
+
 
 </navigation>
