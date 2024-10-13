@@ -1,4 +1,4 @@
-package com.storaritech.acao10app.admin;
+package com.storaritech.acao10app.usuario;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +19,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -27,28 +28,29 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.storaritech.acao10app.FormLogin;
+import com.storaritech.acao10app.Login;
 import com.storaritech.acao10app.R;
-import com.storaritech.acao10app.databinding.ActivityFormMenuAdminBinding;
+import com.storaritech.acao10app.databinding.ActivityMenuUsuarioBinding;
 import com.storaritech.acao10app.entidades.MySingleton;
 import com.storaritech.acao10app.entidades.Usuario;
-import com.storaritech.acao10app.usuario.FormMenu_Usuario;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FormMenu_Admin extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener {
+public class Menu_Usuario extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener {
+
     ImageView img_PerfilNav;
     TextView txt_IdNav , txt_NomeNav, txt_EmailNav;
+
+
     RequestQueue request;
     JsonObjectRequest jsonObjectReq;
     StringRequest stringRequest;
 
-    private AppBarConfiguration mAppBarConfiguration;
-    private ActivityFormMenuAdminBinding binding;
 
+    private AppBarConfiguration mAppBarConfiguration;
+    private ActivityMenuUsuarioBinding binding;
 
     @Override
     protected void onStart(){
@@ -58,6 +60,7 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
         txt_IdNav.setText(FirebaseAuth.getInstance().getUid());
         carregarWEBService();
     }
+
 
     private void carregarWEBService() {
         String ip = getString(R.string.ip);
@@ -83,7 +86,7 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
                     tabUsuarios.setSenha(jsonObject.optString("senha"));
                     tabUsuarios.setNivel(jsonObject.optString("nivel"));
                     tabUsuarios.setUrl_imagem(jsonObject.optString("url_imagem"));
-                }catch (JSONException e){
+                }catch (JSONException  e){
                     e.printStackTrace();
                 }
 
@@ -108,53 +111,58 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
     private void IniciarComponentes(){
 
         //Instanciando a tela de SideBar
-        NavigationView navigationView = binding.navViewAdmin;
+        NavigationView navigationView = binding.navViewUsuario;
         View header = navigationView.getHeaderView(0);
-        img_PerfilNav = header.findViewById(R.id.img_Admin_PerfilNav);
-        txt_IdNav = header.findViewById(R.id.txt_Admin_IdNav);
-        txt_NomeNav = header.findViewById(R.id.txt_Admin_NomeNav);
-        txt_EmailNav = header.findViewById(R.id.txt_Admin_EmailNav);
+        img_PerfilNav = header.findViewById(R.id.img_PerfilNav);
+        txt_IdNav = header.findViewById(R.id.txt_IdNav);
+        txt_NomeNav = header.findViewById(R.id.txt_NomeNav);
+        txt_EmailNav = header.findViewById(R.id.txt_EmailNav);
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityFormMenuAdminBinding.inflate(getLayoutInflater());
-        setContentView(binding.getRoot());
+     binding = ActivityMenuUsuarioBinding.inflate(getLayoutInflater());
+     setContentView(binding.getRoot());
 
-        setSupportActionBar(binding.appBarFormMenuAdmin.toolbar);
-        /**binding.appBarFormMenuAdmin.fab.setOnClickListener(new View.OnClickListener() {
+        setSupportActionBar(binding.appBarFormMenu.toolbar);
+        binding.appBarFormMenu.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null)
                         .setAnchorView(R.id.fab).show();
             }
-        });**/
-        DrawerLayout drawer = binding.drawerLayoutAdmin;
-        NavigationView navigationView = binding.navViewAdmin;
+        });
+        DrawerLayout drawer = binding.drawerLayoutUsuario;
+        NavigationView navigationView = binding.navViewUsuario;
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_CadUsuario, R.id.nav_Clube, R.id.nav_QRCode, R.id.nav_Parceiro, R.id.nav_Propaganda)
-
+                R.id.nav_DoarAgora, R.id.nav_gallery, R.id.nav_slideshow)
                 .setOpenableLayout(drawer)
                 .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_form_menu_admin);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_form_menu);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+
+
+
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.form_menu_admin, menu);
+        getMenuInflater().inflate(R.menu.form_menu_usuario, menu);
+
         return true;
     }
 
     @Override
     public boolean onSupportNavigateUp() {
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_form_menu_admin);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_form_menu);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
     }
@@ -162,23 +170,25 @@ public class FormMenu_Admin extends AppCompatActivity implements Response.Listen
     @Override
     public boolean onPrepareOptionsMenu(@NonNull Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.action_settings_admin);
-
+        MenuItem item = menu.findItem(R.id.action_settings_usuario);
         item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(@androidx.annotation.NonNull MenuItem item) {
+
+                //Deslogado
                 FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(FormMenu_Admin.this, FormLogin.class);
+                Intent intent = new Intent(Menu_Usuario.this, Login.class);
                 startActivity(intent);
                 finish();
+
+                //Toast.makeText(getApplicationContext(), "Deslogado do sistema com sucesso!",Toast.LENGTH_LONG).show();
                 return false;
             }
         });
 
-
-
         return false;
     }
+
 
     @Override
     public void onErrorResponse(VolleyError volleyError) {

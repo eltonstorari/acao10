@@ -19,21 +19,21 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".admin.FormMenu_Admin"
+            android:name=".admin.Menu_Admin"
             android:exported="false"
-            android:label="@string/title_activity_form_menu_admin"
+            android:label="Ação 10 - Administrador"
             android:theme="@style/Theme.Acao10App.NoActionBar" />
 
         <activity
-            android:name=".usuario.FormMenu_Usuario"
+            android:name=".usuario.Menu_Usuario"
             android:exported="false"
-            android:label="@string/title_activity_form_menu"
+            android:label="Ação 10 - Marketing Social"
             android:theme="@style/Theme.Acao10App.NoActionBar" />
         <activity
-            android:name=".FormCadastro"
+            android:name=".CadastreSe"
             android:exported="false" />
         <activity
-            android:name=".FormLogin"
+            android:name=".Login"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

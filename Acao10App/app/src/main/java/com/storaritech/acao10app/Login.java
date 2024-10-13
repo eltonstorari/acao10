@@ -1,6 +1,5 @@
 package com.storaritech.acao10app;
 
-import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,10 +24,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.storaritech.acao10app.admin.FormMenu_Admin;
+import com.storaritech.acao10app.admin.Menu_Admin;
 import com.storaritech.acao10app.entidades.MySingleton;
 import com.storaritech.acao10app.entidades.Usuario;
-import com.storaritech.acao10app.usuario.FormMenu_Usuario;
+import com.storaritech.acao10app.usuario.Menu_Usuario;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -41,7 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class FormLogin extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener  {
+public class Login extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener  {
 
 
     //var
@@ -77,7 +76,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_form_login);
+        setContentView(R.layout.activity_login);
 
 
         getSupportActionBar().hide();
@@ -87,7 +86,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
         text_tela_cadastro.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(FormLogin.this, FormCadastro.class);
+                Intent intent = new Intent(Login.this, CadastreSe.class);
                 startActivity(intent);
             }
         });
@@ -107,7 +106,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
                 }
                 else if (nivel.equals("UsuarioId")){
                     //Esconde Teclado
-                    InputMethodManager imm = (InputMethodManager) getSystemService(FormCadastro.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(CadastreSe.INPUT_METHOD_SERVICE);
                     if(imm.isActive())
                         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 
@@ -211,13 +210,13 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
 
 
     private void TelaPrincipal_Usuario(){
-        Intent intent = new Intent(FormLogin.this, FormMenu_Usuario.class);
+        Intent intent = new Intent(Login.this, Menu_Usuario.class);
         startActivity(intent);
         finish();
     }
 
     private void TelaPrincipal_Admin(){
-        Intent intent = new Intent(FormLogin.this, FormMenu_Admin.class);
+        Intent intent = new Intent(Login.this, Menu_Admin.class);
         startActivity(intent);
         finish();
     }
@@ -302,7 +301,7 @@ public class FormLogin extends AppCompatActivity implements Response.Listener<JS
     public void onResponse(JSONObject jsonObject) {
 
         Toast.makeText(getApplicationContext(), "Cadastro realizado com sucesso!!!", Toast.LENGTH_LONG).show();
-        //Intent intent = new Intent(FormCadastro.this, FormLogin.class);
+        //Intent intent = new Intent(CadastreSe.this, Login.class);
         //startActivity(intent);
 
 

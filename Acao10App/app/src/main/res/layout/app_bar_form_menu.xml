@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".usuario.FormMenu_Usuario">
+    tools:context=".usuario.Menu_Usuario">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_height="wrap_content"
@@ -21,7 +21,7 @@
 
   </com.google.android.material.appbar.AppBarLayout>
 
-  <include layout="@layout/content_form_menu_usuario"/>
+  <include layout="@layout/content_menu_usuario"/>
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
   android:id="@+id/fab"

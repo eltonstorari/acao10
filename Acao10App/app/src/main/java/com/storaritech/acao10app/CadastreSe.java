@@ -1,6 +1,5 @@
 package com.storaritech.acao10app;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,8 +7,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -17,7 +14,6 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -38,7 +34,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.json.JSONObject;
 
-public class FormCadastro extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener  {
+public class CadastreSe extends AppCompatActivity implements Response.Listener<JSONObject>, Response.ErrorListener  {
 
     private EditText edit_nome, edit_email, edit_senha;
     private Button bt_cadastrar;
@@ -52,7 +48,7 @@ public class FormCadastro extends AppCompatActivity implements Response.Listener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_form_cadastro);
+        setContentView(R.layout.activity_cadastro_se);
 
         getSupportActionBar().hide();
         IniciarComponentes();
@@ -67,7 +63,7 @@ public class FormCadastro extends AppCompatActivity implements Response.Listener
             public void onClick(View v) {
 
                 //Esconde Teclado
-                InputMethodManager imm = (InputMethodManager) getSystemService(FormCadastro.INPUT_METHOD_SERVICE);
+                InputMethodManager imm = (InputMethodManager) getSystemService(CadastreSe.INPUT_METHOD_SERVICE);
                 if(imm.isActive())
                     imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
 
@@ -190,7 +186,7 @@ public class FormCadastro extends AppCompatActivity implements Response.Listener
     }
 
     private void TelaLogin() {
-        Intent intent = new Intent(FormCadastro.this, FormLogin.class);
+        Intent intent = new Intent(CadastreSe.this, Login.class);
         startActivity(intent);
     }
 
