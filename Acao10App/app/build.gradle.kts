@@ -11,7 +11,7 @@ android {
     defaultConfig {
         applicationId = "com.storaritech.acao10app"
         minSdk = 24
-        targetSdk = 29
+        targetSdk = 27
         versionCode = 1
         versionName = "1.0"
 
