@@ -240,6 +240,7 @@ public class clubeFragment extends Fragment implements Response.Listener<JSONObj
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Toast.makeText(getContext(), "Erro ao Registrar-> " + error, Toast.LENGTH_SHORT).show();
+                    Log.i("RESPOSTA: ", "" + error);
                 }
             }) {
                 @Override
@@ -276,6 +277,78 @@ public class clubeFragment extends Fragment implements Response.Listener<JSONObj
             };
             //resquest.add(stringRequest);
             MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+        });
+
+        btnRemover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String id = edit_clubeAdmin_id.getText().toString();
+
+                if(id.isEmpty()){
+                    Toast.makeText(getContext(), "Selecione primeiramente o usuário!", Toast.LENGTH_SHORT).show();
+
+                }else{
+
+
+                    String ip = getString(R.string.ip);
+                    String url = ip + "/acao10/api/clubes/remover.php?id=" + id;
+
+                    stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+                        @Override
+                        public void onResponse(String response) {
+
+                            if (response.trim().equalsIgnoreCase("removido")) {
+                                edit_clubeAdmin_id.setText("");
+                                edit_clubeAdmin_nome.setText("");
+                                edit_clubeAdmin_descricao.setText("");
+                                edit_clubeAdmin_telefone.setText("");
+                                edit_clubeAdmin_whatsapp.setText("");
+                                edit_clubeAdmin_cep.setText("");
+                                edit_clubeAdmin_cidade.setText("");
+                                edit_clubeAdmin_bairro.setText("");
+                                edit_clubeAdmin_rua.setText("");
+                                edit_clubeAdmin_numero.setText("");
+                                edit_clubeAdmin_email.setText("");
+                                imgFoto.setImageResource(R.drawable.sem_foto);
+
+
+                                Toast.makeText(getContext(), "Excluído com sucesso", Toast.LENGTH_SHORT).show();
+                            } else {
+                                if (response.trim().equalsIgnoreCase("naoExiste")) {
+                                    Toast.makeText(getContext(), "Clube não Encontrado ->  " + response, Toast.LENGTH_SHORT).show();
+                                    Log.i("RESPOSTA: ", "" + response);
+
+                                }else{
+
+                                    Toast.makeText(getContext(), "Erro na Deleção ->  " + response, Toast.LENGTH_SHORT).show();
+                                    Log.i("RESPOSTA: ", "" + response);
+
+                                }
+                            }
+
+                        }
+
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getContext(), "Erro ao Excluir", Toast.LENGTH_SHORT).show();
+
+                        }
+                    });
+
+
+                    //Toast.makeText(getContext(), "Deletada com sucesso!", Toast.LENGTH_SHORT).show();
+
+
+                    //resquest.add(stringRequest);
+                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
+
+
+                }
+
+            }
         });
 
         btnFoto.setOnClickListener(v -> {
@@ -465,9 +538,11 @@ public class clubeFragment extends Fragment implements Response.Listener<JSONObj
                     tabClube.setNome(jsonObject.optString("nome"));
                     tabClube.setDescricao(jsonObject.optString("descricao"));
                     tabClube.setTelefone(jsonObject.optString("telefone"));
-                    tabClube.setWhatsapp(jsonObject.optString("Whatsapp"));
+                    tabClube.setWhatsapp(jsonObject.optString("whatsapp"));
+                    Log.d("RESPOSTA", tabClube.getWhatsapp());
                     tabClube.setCep(jsonObject.optString("cep"));
                     tabClube.setCidade(jsonObject.optString("cidade"));
+                    Log.d("RESPOSTA", tabClube.getWhatsapp());
                     tabClube.setBairro(jsonObject.optString("bairro"));
                     tabClube.setRua(jsonObject.optString("rua"));
                     tabClube.setNumero(jsonObject.optString("numero"));
@@ -482,6 +557,7 @@ public class clubeFragment extends Fragment implements Response.Listener<JSONObj
                 edit_clubeAdmin_descricao.setText(tabClube.getDescricao());
                 edit_clubeAdmin_telefone.setText(tabClube.getTelefone());
                 edit_clubeAdmin_whatsapp.setText(tabClube.getWhatsapp());
+                Log.d("RESPOSTA", tabClube.getWhatsapp());
                 edit_clubeAdmin_cep.setText(tabClube.getCep());
                 edit_clubeAdmin_cidade.setText(tabClube.getCidade());
                 edit_clubeAdmin_bairro.setText(tabClube.getBairro());

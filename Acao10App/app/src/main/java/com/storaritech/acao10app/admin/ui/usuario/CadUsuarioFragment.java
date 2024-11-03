@@ -48,6 +48,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 import com.storaritech.acao10app.Interface.RecyclerViwerInterface_Usuarios;
 import com.storaritech.acao10app.adaptador.UsuariosAdapter;
 import com.storaritech.acao10app.entidades.MySingleton;
@@ -187,7 +188,18 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                                 @Override
                                 public void onErrorResponse(VolleyError error) {
                                     Toast.makeText(getContext(), "Erro ao Registrar", Toast.LENGTH_SHORT).show();
-
+                                    FirebaseUser usuarioAtual = FirebaseAuth.getInstance().getCurrentUser();
+                                    usuarioAtual.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                            editId.setText("");
+                                            editNome.setText("");
+                                            editEmail.setText("");
+                                            editSenha.setText("");
+                                            radioUsuario.setChecked(true);
+                                            imgFoto.setImageResource(R.drawable.sem_foto);
+                                        }
+                                    });
                                 }
                             }) {
                                 @Override
@@ -269,14 +281,79 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
                 String id = editId.getText().toString();
 
                 if(id.isEmpty()){
-                    Snackbar snackbar = Snackbar.make(v, "Selecione primeiramente o usuário!", Snackbar.LENGTH_LONG);
-                    snackbar.setBackgroundTint(Color.WHITE);
-                    snackbar.setTextColor(Color.BLACK);
-                    snackbar.show();
+                    Toast.makeText(getContext(), "Selecione primeiramente o usuário!", Toast.LENGTH_SHORT).show();
+
                 }else{
 
 
-                    carregarWEBServiceAtualizar();
+                    String ip = getString(R.string.ip);
+                    String url = ip + "/acao10/api/usuarios/update.php";
+
+                    stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+
+                        @Override
+                        public void onResponse(String response) {
+
+
+                            if (response.trim().equalsIgnoreCase("registra")) {
+
+                                Toast.makeText(getContext(), "Atualizando com sucesso!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), "Registro não Atualizado", Toast.LENGTH_SHORT).show();
+                                Log.i("RESPOSTA: ", "" + response);
+                            }
+
+                        }
+
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            Toast.makeText(getContext(), "Erro ao Atualizar", Toast.LENGTH_SHORT).show();
+                            Log.i("RESPOSTA: ", "" + error.toString());
+                        }
+                    }) {
+
+
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+
+                            usuarioID = editId.getText().toString();
+                            int selectedId = radioGroupNivel.getCheckedRadioButtonId();
+                            RadioButton radioButton = radioGroupNivel.findViewById(selectedId);
+                            String nivel =  radioButton.getText().toString().toLowerCase();
+
+                            if (nivel.equalsIgnoreCase("usuário")){
+                                nivel = "usuario";
+                            }
+                            else if(nivel.equalsIgnoreCase("administrador")){
+                                nivel = "admin";
+                            }
+
+                            String id = usuarioID;
+                            String nome = editNome.getText().toString();
+                            String email = editEmail.getText().toString();
+                            String senha = editSenha.getText().toString();
+
+                            String imagem = converterImgString(bitmap);
+                            //String urlImagem = "/imagens/" + nome + "jpg";
+
+                            Map<String, String> parametros = new HashMap<>();
+                            parametros.put("id", id);
+                            parametros.put("nome", nome);
+                            parametros.put("email", email);
+                            parametros.put("senha", senha);
+                            parametros.put("nivel", nivel);
+                            parametros.put("imagem", imagem);
+                            //parametros.put("url_imagem", urlImagem);
+
+
+                            return parametros;
+                        }
+
+                    };
+
+                    //resquest.add(stringRequest);
+                    MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
 
 
                 }
@@ -706,76 +783,6 @@ public class CadUsuarioFragment extends Fragment implements Response.Listener<JS
 
     }
 
-    private void carregarWEBServiceAtualizar() {
-        String ip = getString(R.string.ip);
-        String url = ip + "/acao10/api/usuarios/update.php?";
-
-        stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-
-
-                if (response.trim().equalsIgnoreCase("registra")) {
-
-                    Toast.makeText(getContext(), "Atualizando com sucesso!", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Registro não Atualizado", Toast.LENGTH_SHORT).show();
-                    Log.i("RESPOSTA: ", "" + response);
-                }
-
-            }
-
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(getContext(), "Erro ao Atualizar", Toast.LENGTH_SHORT).show();
-
-            }
-        }) {
-
-
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-
-                usuarioID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                int selectedId = radioGroupNivel.getCheckedRadioButtonId();
-                RadioButton radioButton = radioGroupNivel.findViewById(selectedId);
-                String nivel =  radioButton.getText().toString().toLowerCase();
-
-                if (nivel.equalsIgnoreCase("usuário")){
-                    nivel = "usuario";
-                }
-                else if(nivel.equalsIgnoreCase("administrador")){
-                    nivel = "admin";
-                }
-
-                String id = usuarioID;
-                String nome = editNome.getText().toString();
-                String email = editEmail.getText().toString();
-                String senha = editSenha.getText().toString();
-
-                String imagem = converterImgString(bitmap);
-                //String urlImagem = "/imagens/" + nome + "jpg";
-
-                Map<String, String> parametros = new HashMap<>();
-                parametros.put("id", id);
-                parametros.put("nome", nome);
-                parametros.put("email", email);
-                parametros.put("senha", senha);
-                parametros.put("nivel", nivel);
-                parametros.put("imagem", imagem);
-                //parametros.put("url_imagem", urlImagem);
-
-
-                return parametros;
-            }
-
-        };
-
-        //resquest.add(stringRequest);
-        MySingleton.getInstance(getContext()).addToRequestQueue(stringRequest);
-    }
 
     private void carregarWEBServiceRemover(String id) {
         String ip = getString(R.string.ip);
