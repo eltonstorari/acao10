@@ -47,7 +47,7 @@ public class qrcodeFragment extends Fragment {
     RequestQueue request;
     JsonObjectRequest jsonObjectReq;
     ArrayList<Clube> listaClubes;
-    EditText editAutenticacao;
+    EditText editAutenticacao, editCaixa, editDescricao;
     ImageView imageViewQRCode;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +59,8 @@ public class qrcodeFragment extends Fragment {
         request = Volley.newRequestQueue(getContext());
         listaClubes=new ArrayList<>();
         editAutenticacao = vista.findViewById(R.id.edit_qrcodeAdmin_codigo);
+        editCaixa = vista.findViewById(R.id.edit_qrcodeAdmin_caixa);
+        editDescricao = vista.findViewById(R.id.edit_qrcodeAdmin_descricao);
         imageViewQRCode = vista.findViewById(R.id.imageViewQRCode);
 
         carregarWEBServiceListaClubes();
@@ -99,6 +101,7 @@ public class qrcodeFragment extends Fragment {
 
             }
     }
+
 
 
 
