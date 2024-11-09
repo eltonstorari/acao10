@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">Acao10App</string>
-    <string name="ip">http://192.168.2.102</string>
+    <string name="ip">http://acao10.org</string>
 
 </resources>
