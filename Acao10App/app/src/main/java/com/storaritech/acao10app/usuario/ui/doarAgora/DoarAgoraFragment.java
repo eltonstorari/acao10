@@ -18,8 +18,6 @@ public class DoarAgoraFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-
         View vista = inflater.inflate(R.layout.fragment_doar_agora, container, false);
 
 
