@@ -33,10 +33,10 @@ public class UsuariosAdapter extends RecyclerView.Adapter<UsuariosAdapter.Usuari
 
     public UsuariosAdapter(List<Usuario> listaUsuarios, RecyclerViwerInterface_Usuarios recyclerViwerInterfaceUsuarios, Context context){
 
-        this.listaUsuarios = listaUsuarios;
-        this.recyclerViwerInterfaceUsuarios = recyclerViwerInterfaceUsuarios;
-        this.context = context;
-        request = Volley.newRequestQueue(context);
+            this.listaUsuarios = listaUsuarios;
+            this.recyclerViwerInterfaceUsuarios = recyclerViwerInterfaceUsuarios;
+            this.context = context;
+            request = Volley.newRequestQueue(context);
 
 
 
